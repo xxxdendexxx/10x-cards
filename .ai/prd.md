@@ -14,7 +14,7 @@ Kluczowe funkcjonalności:
 ## 2. Problem użytkownika
 
 Problem:
-Użytkownicy, szczególnie uczniowie, mają trudność w tworzeniu wysokiej jakości fiszek edukacyjnych. Ręczne tworzenie fiszek zajmuje średnio 3 minuty na jedną fiszkę, co jest czasochłonne. Początkujący użytkownicy często mają problem z optymalnym podziałem informacji, co wpływa negatywnie na efektywność nauki metodą spaced repetition.
+Użytkownicy, szczególnie uczniowie, mają trudność w tworzeniu wysokiej jakości fiszek edukacyjnych. Manualne tworzenie wysokiej jakości fiszek wymaga dużych nakładów czasu i wysiłku, co zniechęca do korzystania z efektywnej metody nauki, jaką jest spaced repetition. Początkujący użytkownicy często mają problem z optymalnym podziałem informacji, co wpływa negatywnie na efektywność nauki metodą spaced repetition.
 
 Wpływ problemu:
 - Wydłużony czas przygotowania materiałów do nauki.
@@ -26,12 +26,11 @@ Wpływ problemu:
 1. **Generowanie fiszek przez AI**
    - Użytkownik wprowadza tekst (kopiuj-wklej) do systemu.
    - AI generuje kandydatów na fiszki na podstawie wprowadzonego tekstu.
-   - Kandydaci wyświetlają się w interfejsie recenzji, nie są automatycznie zapisywani.
+   - Kandydaci wyświetlają się w postaci listy, nie są automatycznie zapisywani.
    - Użytkownik ma możliwość:
-     - Szybkiej recenzji (do 10 sekund na fiszkę)
-     - Edycji treści proponowanych fiszek
      - Akceptacji lub odrzucenia każdej fiszki
-   - Walidacja limitów znaków dla pól tekstowych zapewnia spójność danych.
+     - Edycji treści proponowanych fiszek
+
 
 2. **Ręczne tworzenie fiszek**
    - Formularz umożliwiający użytkownikowi tworzenie fiszek poprzez wpisanie zawartości pól:
@@ -41,7 +40,7 @@ Wpływ problemu:
      - Zapisywania nowej fiszki
      - Edytowania już zapisanych fiszek
      - Usuwania niepotrzebnych fiszek
-   - Automatyczna walidacja danych wprowadzanych przez użytkownika.
+   - Ręczne tworzenie i wyświetlanie w ramach widoku listy "Moje fiszki"
 
 3. **Przeglądanie, edycja i usuwanie fiszek**
    - Interfejs do przeglądania wszystkich fiszek użytkownika.
@@ -49,17 +48,22 @@ Wpływ problemu:
    - Mechanizm usuwania z potwierdzeniem akcji dla zapobiegania przypadkowemu usunięciu.
 
 4. **Zarządzanie kontem użytkownika**
-   - System kont użytkowników oparty na Supabase (PostgreSQL).
    - Funkcje obejmują:
      - Bezpieczne logowanie i uwierzytelnianie
      - Zmianę hasła
-     - Usunięcie konta
+     - Usunięcie konta (i powiązanych fiszek)
    - Użytkownik musi być zalogowany, aby uzyskać dostęp do swoich fiszek i ustawień konta.
 
 5. **Integracja z algorytmem powtórek**
-   - Zatwierdzone fiszki są automatycznie integrowane z open-source algorytmem powtórek.
-   - Proces integracji odbywa się bez dodatkowych konfiguracji przez użytkownika.
-   - System zapewnia potwierdzenie poprawnego przesłania fiszek do modułu powtórek.
+   - Zapewnienie mechanizmu przypisywania fiszek do harmonogramu powtórek (korzystanie z gotowego algorytmu).
+   - Brak dodatkowych metadanych i zaawansowanych funkcji powiadomień w MVP.
+
+6. **Statystyki generowania fiszek**
+   - Zbieranie informacji o tym, ile fiszek zostało wygenerowanych przez AI i ile z nich ostatecznie zaakceptowano.
+
+7. **Wymagania prawne i ograniczenia**
+   - Dane osobowe użytkowników i fiszek przechowywane zgodnie z RODO.
+   - Prawo do wglądu i usunięcia danych (konto wraz z fiszkami) na wniosek użytkownika.
 
 ## 4. Granice produktu
 
@@ -77,23 +81,24 @@ Nie wchodzi w zakres MVP:
 - Aplikacje mobilne (wersja na początek tylko web).
 - Zaawansowane funkcjonalności interfejsu użytkownika, które zostaną określone w kolejnych iteracjach.
   
-Dodatkowo, w przyszłych iteracjach planowane jest rozszerzenie o funkcjonalność rozwiązywania quizów.
-
 ## 5. Historyjki użytkowników
 
 US-001  
 Tytuł: Generowanie fiszek przez AI  
-Opis: Użytkownik wprowadza tekst, z którego system AI generuje kandydatów na fiszki. Kandydaci są prezentowani w interfejsie recenzji, gdzie użytkownik może je edytować, zatwierdzać lub odrzucać przed zapisaniem do bazy.  
+Opis: Użytkownik wprowadza tekst, z którego system AI generuje kandydatów na fiszki. Kandydaci są prezentowani w interfejsie w formie listy, gdzie użytkownik może je edytować, zatwierdzać lub odrzucać przed zapisaniem do bazy.  
 Kryteria akceptacji:
+- Użytkownik musi być zalogowany,
 - Użytkownik wprowadza tekst przez dedykowany formularz.
-- System generuje listę kandydatów na fiszki.
+- Po kliknięciu przycisku generowania aplikacja komunikuje się z API modelu LLM i wyświetla listę wygenerowanych propozycji fiszek,
 - Kandydaci wyświetlają się w czytelnym interfejsie z opcjami edycji, zatwierdzenia lub odrzucenia.
-- Średni czas recenzji pojedynczego kandydata nie przekracza 10 sekund.
+- W przypadku problemów z API lub braku odpowiedzi modelu użytkownik zobaczy stosowny komunikat o błędzie.
 
 US-002  
 Tytuł: Ręczne tworzenie fiszek  
 Opis: Użytkownik może stworzyć nową fiszkę ręcznie, wypełniając formularz z polami "przód" i "tył".  
 Kryteria akceptacji:
+- Użytkownik musi być zalogowany,
+- W widoku "Moje fiszki" znajduje się przycisk dodania nowej fiszki.
 - Formularz do tworzenia fiszki zawiera pola "przód" i "tył" z ograniczeniem znaków.
 - Użytkownik może zapisać nową fiszkę.
 - Po zapisaniu fiszka jest widoczna w interfejsie przeglądania.
@@ -103,25 +108,27 @@ US-003
 Tytuł: Zarządzanie fiszkami  
 Opis: Użytkownik może przeglądać, edytować oraz usuwać istniejące fiszki przy użyciu intuicyjnego interfejsu.  
 Kryteria akceptacji:
+- Użytkownik musi być zalogowany,
 - Lista wszystkich fiszek użytkownika jest wyświetlana.
 - Każda fiszka posiada opcje edycji i usuwania.
 - Przed usunięciem fiszki użytkownik musi potwierdzić akcję.
 
-US-004  
-Tytuł: Zarządzanie kontem użytkownika  
-Opis: Użytkownik może zmienić swoje hasło lub usunąć konto poprzez interfejs konta, wykorzystując funkcjonalności oferowane przez Supabase.  
+US-004
+Tytuł: Bezpieczny dostęp i autoryzacja
+Opis: Jako zalogowany użytkownik chcę mieć pewność, że moje fiszki nie są dostępne dla innych użytkowników, aby zachować prywatność i bezpieczeństwo danych.
 Kryteria akceptacji:
-- Użytkownik musi być zalogowany, aby zarządzać kontem.
-- Formularz umożliwia zmianę hasła i wysyła potwierdzenie zmiany.
-- Proces usuwania konta wymaga potwierdzenia i po jego wykonaniu konto zostaje usunięte.
+- Tylko zalogowany użytkownik może wyświetlać, edytować i usuwać swoje fiszki.
+- Nie ma dostępu do fiszek innych użytkowników ani możliwości współdzielenia.
 
 US-005  
-Tytuł: Integracja fiszek z algorytmem powtórek  
-Opis: Po zatwierdzeniu fiszki, system automatycznie przesyła jej dane do open-source algorytmu powtórek, który ustala harmonogram powtórek.  
+Tytuł: Sesja nauki z algorytmem powtórek
+Opis: Użytkownik chce, aby dodane fiszki były dostępne w widoku "Sesja nauki" opartym na zewnętrznym algorytmie, aby móc efektywnie się uczyć (spaced repetition).
 Kryteria akceptacji:
-- Po zatwierdzeniu fiszki, dane są automatycznie przesyłane do modułu powtórek.
-- Integracja następuje bez konieczności dodatkowej konfiguracji przez użytkownika.
-- Użytkownik otrzymuje komunikat potwierdzający integrację.
+- Użytkownik musi być zalogowany,
+- W widoku "Sesja nauki" algorytm przygotowuje dla mnie sesję nauki fiszek
+- Na start wyświetlany jest przód fiszki, poprzez interakcję użytkownik wyświetla jej tył
+- Użytkownik ocenia zgodnie z oczekiwaniami algorytmu na ile przyswoił fiszkę
+- Następnie algorytm pokazuje kolejną fiszkę w ramach sesji nauki
 
 US-006  
 Tytuł: Bezpieczne logowanie i uwierzytelnianie  
@@ -131,11 +138,25 @@ Kryteria akceptacji:
 - Uwierzytelnianie odbywa się za pomocą bezpiecznych metod (np. HTTPS, tokeny).
 - Dostęp do danych użytkownika oraz funkcji zmiany konta jest zarezerwowany dla zalogowanych użytkowników.
 
-## 6. Metryki sukcesu
+US-007
+Tytuł: Rejestracja konta
+Opis: Jako nowy użytkownik chcę się zarejestrować, aby mieć dostęp do własnych fiszek i móc korzystać z generowania fiszek przez AI.
+Kryteria akceptacji:
+- Formularz rejestracyjny zawiera pola na adres e-mail i hasło.
+- Po poprawnym wypełnieniu formularza i weryfikacji danych konto jest aktywowane.
+- Użytkownik otrzymuje potwierdzenie pomyślnej rejestracji i zostaje zalogowany.
 
-- 75% fiszek wygenerowanych przez AI musi być zaakceptowanych przez użytkowników.
-- Użytkownicy powinni korzystać z AI do tworzenia co najmniej 75% wszystkich fiszek.
-- Średni czas tworzenia fizycznej fiszki ręcznie wynosi około 3 minuty.
-- Średni czas recenzji pojedynczego kandydata wygenerowanego przez AI wynosi około 10 sekund.
-- System powinien monitorować stosunek zaakceptowanych kandydatów do wszystkich wygenerowanych fiszek.
-- Dodatkowo, liczba aktywnych i zaangażowanych użytkowników będzie monitorowana jako wskaźnik skuteczności wdrożenia produktu.
+US-008
+Tytuł: Zarządzanie kontem użytkownika  
+Opis: Użytkownik może zmienić swoje hasło lub usunąć konto poprzez interfejs konta, wykorzystując funkcjonalności oferowane przez Supabase.  
+Kryteria akceptacji:
+- Użytkownik musi być zalogowany, aby zarządzać kontem.
+- Formularz umożliwia zmianę hasła i wysyła potwierdzenie zmiany.
+- Proces usuwania konta wymaga potwierdzenia i po jego wykonaniu konto zostaje usunięte.
+
+## 6. Metryki sukcesu
+1. Efektywność generowania fiszek:
+   - 75% wygenerowanych przez AI fiszek jest akceptowanych przez użytkownika.
+   - Użytkownicy tworzą co najmniej 75% fiszek z wykorzystaniem AI (w stosunku do wszystkich nowo dodanych fiszek).
+3. Zaangażowanie:
+   - Monitorowanie liczby wygenerowanych fiszek i porównanie z liczbą zatwierdzonych do analizy jakości i użyteczności.
