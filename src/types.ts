@@ -8,28 +8,34 @@
 import type { Database } from "./db/database.types";
 
 // Underlying entity types from the database
-type FlashcardEntity = Database["public"]["Tables"]["flashcards"]["Row"];
-type GenerationLogEntity = Database["public"]["Tables"]["generations"]["Row"];
-type GenerationErrorLogEntity = Database["public"]["Tables"]["generation_error_logs"]["Row"];
-
+export type Flashcard = Database["public"]["Tables"]["flashcards"]["Row"];
+export type FlashcardInsert = Database["public"]["Tables"]["flashcards"]["Insert"];
+export type Generation = Database["public"]["Tables"]["generations"]["Row"];
+export type GenerationErrorLog = Database["public"]["Tables"]["generation_error_logs"]["Row"];
 /* DTOs */
 //
 // Flashcard DTO
 // Represents a flashcard as returned by the API endpoints (GET /flashcards, GET /flashcards/{id})
 //
 export type FlashcardDTO = Pick<
-  FlashcardEntity,
+  Flashcard,
   "id" | "front" | "back" | "source" | "generation_id" | "created_at" | "updated_at"
 >;
+
+///
+// Pagination DTO
+// Contains pagination details used in list responses
+//
+export interface PaginationDTO {
+  page: number;
+  limit: number;
+  total: number;
+}
 
 // Paginated response for listing flashcards
 export interface FlashcardsListResponseDTO {
   data: FlashcardDTO[];
-  pagination: {
-    page: number;
-    pageSize: number;
-    total: number;
-  };
+  pagination: PaginationDTO;
 }
 
 // Flashcard Create DTO & Command Model
@@ -42,17 +48,17 @@ export interface FlashcardsListResponseDTO {
 //
 export type FlashcardSource = "ai-full" | "ai-edited" | "manual";
 
-export interface CreateFlashcardDto {
+export interface FlashcardCreateDTO {
   front: string; // max 200 characters
   back: string; // max 500 characters
   source: FlashcardSource;
-  generationId_id: number | null;
+  generation_id: number | null;
 }
 
 // Command for creating a new flashcard
 
 export interface CreateFlashcardCommand {
-  flashcards: CreateFlashcardDto[];
+  flashcards: FlashcardCreateDTO[];
 }
 
 //
@@ -63,7 +69,7 @@ export interface CreateFlashcardCommand {
 export type FlashcardUpdateDto = Partial<{
   front: string;
   back: string;
-  source: "ai-full" | "ai-edited" | "manual";
+  source: FlashcardSource;
   generation_id: number | null;
 }>;
 
@@ -81,31 +87,36 @@ export interface FlashcardProposalDTO {
 }
 
 // Response DTO for confirming AI-generated flashcards
-export interface ConfirmFlashcardsResponseDTO {
+export interface GenerationCreateResponseDTO {
   generation_id: number;
-  generatedCount: number;
-  flashcards: FlashcardDTO[];
+  generated_count: number;
+  flashcards: FlashcardProposalDTO[];
 }
 
-// For study sessions, we only need minimal flashcard data
-export type StudyFlashcardDTO = Pick<FlashcardDTO, "id" | "front">;
+//
+// Generation Detail DTO
+// Provides detailed information for a generation request (GET /generations/{id}),
+// including metadata from the generations table and optionally, the associated flashcards.
+//
+export type GenerationDetailDto = Generation & {
+  flashcards?: FlashcardDTO[];
+};
 
-export interface StudySessionDTO {
-  session: StudyFlashcardDTO[];
-}
-
-// UserDTO for account information
-export interface UserDTO {
-  id: string;
-  email: string;
-  created_at: string;
-}
-
-// GenerationLogDTO reflecting the generations table
-export type GenerationLogDTO = GenerationLogEntity;
-
-// GenerationErrorLogDTO reflecting the generation_error_logs table
-export type GenerationErrorLogDTO = GenerationErrorLogEntity;
+//
+// Generation Error Log DTO
+// Represents an error log entry for the AI flashcard generation process (GET /generation-error-logs).
+//
+export type GenerationErrorLogDTO = Pick<
+  GenerationErrorLog,
+  | "id"
+  | "error_message"
+  | "model"
+  | "source_text_hash"
+  | "source_text_length"
+  | "created_at"
+  | "user_id"
+  | "error_details"
+>;
 
 /* Command Models */
 
@@ -124,15 +135,4 @@ export interface ConfirmFlashcardsCommand {
   sourceTextLength: number;
   model: string;
   generationDuration: number;
-}
-
-// Command to submit a flashcard rating for a study session
-export interface SubmitFlashcardRatingCommand {
-  rating: number; // e.g., rating between 1 and 5
-}
-
-// Command to update user account details
-export interface UpdateUserCommand {
-  email: string;
-  password: string;
 }
