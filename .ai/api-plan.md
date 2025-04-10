@@ -60,22 +60,35 @@
     - 401 Unauthorized
     - 404 Not Found
 
-- **Create Flashcard**
+- **Create Flashcards**
   - **Method:** POST
   - **URL:** /api/flashcards
-  - **Description:** Create a new flashcard. Can be used for manual creation or for saving an AI-generated flashcard after user edits.
+  - **Description:** Create one or more flashcards. Can be used for manual creation or for saving AI-generated flashcards (both 'ai-full' and 'ai-edited') after user review.
   - **Request Payload:**
     ```json
     {
-      "front": "string (max 200 characters)",
-      "back": "string (max 500 characters)",
-      "source": "one of ['ai-full', 'ai-edited', 'manual']"
+      "flashcards": [
+        {
+          "front": "string (max 200 characters)",
+          "back": "string (max 500 characters)",
+          "source": "one of ['ai-full', 'ai-edited', 'manual']",
+          "generation_id": "number or null (required for ai-full and ai-edited, null for manual)"
+        }
+      ]
     }
     ```
   - **Response (201):**
     ```json
-    { "id": "uuid", "front": "...", "back": "...", "source": "manual", "is_deleted": false, "created_at": "timestamp", "updated_at": "timestamp" }
+    {
+      "flashcards": [
+        { "id": "uuid", "front": "...", "back": "...", "source": "...", "generation_id": null, "created_at": "timestamp", "updated_at": "timestamp" }
+      ]
+    }
     ```
+    **Validations**:
+    - `front` maximum length: 200 characters.
+    - `back` maximum length: 500 characters.
+    - `source`: Must be one of `ai-full`, `ai-edited`, or `manual`.
   - **Errors:**
     - 400 Bad Request for invalid payloads
     - 401 Unauthorized
@@ -97,6 +110,10 @@
     - 400 Bad Request
     - 401 Unauthorized
     - 404 Not Found
+  - **Validations**:
+    - `front` maximum length: 200 characters.
+    - `back` maximum length: 500 characters.
+    - `source`: Must be one of `ai-edited` or `manual`.
 
 - **Delete Flashcard**
   - **Method:** DELETE
@@ -107,9 +124,11 @@
     - 401 Unauthorized
     - 404 Not Found
 
+    
+
 - **Generate Flashcard Proposals (AI Generation)**
   - **Method:** POST
-  - **URL:** /api/flashcards/generate
+  - **URL:** /api/generate
   - **Description:** Submit raw text to the AI service to generate flashcard proposals. The proposals are returned to the client for review but are not automatically persisted.
   - **Request Payload:**
     ```json
@@ -120,71 +139,29 @@
   - **Response (200):**
     ```json
     {
-      "proposals": [
+      "generation_id": 123,
+      "flashcardsProposals": [
         { "front": "generated front text", "back": "generated back text", "source": "ai-full" }
-      ]
+      ],
+      "generated_count": 5
     }
     ```
+    **Business Logic**:
+    - Validate that `source_text` length is between 1000 and 10000 characters.
+    - Call the AI service to generate flashcards.
+    - Store the generation metadata and associate generated flashcards.
   - **Errors:**
     - 400 Bad Request for invalid input text
     - 401 Unauthorized
-    - 500 Internal Server Error if AI service fails
+    - 500 Internal Server Error if AI service fails (logs recorded in `generation_error_logs`).
 
-- **Confirm AI-Generated Flashcards**
-  - **Method:** POST
-  - **URL:** /api/flashcards/confirm
-  - **Description:** Persist one or more AI-generated flashcards after user review and possible edits. This endpoint also logs the generation event in the Generations table.
-  - **Request Payload:**
-    ```json
-    {
-      "flashcards": [
-        { "front": "string", "back": "string", "source": "ai-edited" }
-      ],
-      "sourceTextHash": "string",
-      "sourceTextLength": 1200,
-      "model": "model_identifier",
-      "generationDuration": 1500
-    }
-    ```
-  - **Response (201):**
-    ```json
-    { "generatedCount": 1, "flashcards": [ { ...persisted flashcard data... } ] }
-    ```
-  - **Errors:**
-    - 400 Bad Request
-    - 401 Unauthorized
-    - 500 Internal Server Error
 
-### Study Session Endpoints
-
-- **Get Study Session**
   - **Method:** GET
-  - **URL:** /api/study-sessions
-  - **Description:** Retrieve a set of flashcards for the user's review based on spaced repetition scheduling. The selection logic is based on the external spaced repetition algorithm integrated into the backend.
-  - **Response (200):**
-    ```json
-    { "session": [ { "id": "uuid", "front": "..." } ] }
-    ```
-  - **Errors:**
-    - 401 Unauthorized
-
-- **Submit Flashcard Rating**
-  - **Method:** POST
-  - **URL:** /api/study-sessions/:flashcardId/rate
-  - **Description:** Submit a user rating for a flashcard after review. This data can be used by the spaced repetition algorithm to schedule future reviews.
-  - **Request Payload:**
-    ```json
-    { "rating": "integer (e.g., 1-5)" }
-    ```
-  - **Response (200):**
-    ```json
-    { "message": "Rating recorded" }
-    ```
-  - **Errors:**
-    - 400 Bad Request
-    - 401 Unauthorized
-    - 404 Not Found
-
+  - **URL:** /api/generate/{id}
+  - **Description**: Retrieve detailed information of a specific generation including its flashcards.
+  - **Response JSON**: Generation details and associated flashcards.
+  - **Errors**: 404 Not Found.
+  
 ### Account and User Endpoints
 
 *(Note: Most authentication and account management are handled via Supabase Auth, but additional proxy endpoints might be provided.)*
@@ -214,17 +191,6 @@
     - 401 Unauthorized
 
 ### Log and Analytics Endpoints
-
-- **Get Generation Logs**
-  - **Method:** GET
-  - **URL:** /api/generations
-  - **Description:** Retrieve AI flashcard generation logs for the authenticated user. Useful for analytics.
-  - **Response (200):**
-    ```json
-    { "logs": [ { "id": "number", "model": "string", "generatedCount": 5, ... } ] }
-    ```
-  - **Errors:**
-    - 401 Unauthorized
 
 - **Get Generation Error Logs**
   - **Method:** GET
