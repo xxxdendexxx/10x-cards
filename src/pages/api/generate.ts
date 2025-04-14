@@ -41,10 +41,10 @@ export const POST: APIRoute = async ({ request }) => {
     const generationDuration = Math.round(performance.now() - startTime);
 
     // 4. Aktualizacja metadanych generacji
-    await GenerationService.updateGenerationMetadata(generation.id, generationDuration, flashcards.length);
+    await GenerationService.updateGenerationMetadata(generation, generationDuration, flashcards.length);
 
     const response: GenerationCreateResponseDTO = {
-      generation_id: generation.id,
+      generation_id: generation,
       generated_count: flashcards.length,
       flashcards,
     };
@@ -57,7 +57,8 @@ export const POST: APIRoute = async ({ request }) => {
     console.error("Błąd podczas przetwarzania żądania:", error);
     return new Response(
       JSON.stringify({
-        error: "Wystąpił błąd wewnętrzny serwera",
+        //error: "Wystąpił błąd wewnętrzny serwera",
+        error: error,
       }),
       {
         status: 500,

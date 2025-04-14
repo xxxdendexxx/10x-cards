@@ -28,7 +28,7 @@ export class GenerationService {
       throw new Error(`Błąd podczas zapisywania metadanych generacji: ${insertError?.message}`);
     }
 
-    return generation;
+    return generation.id;
   }
 
   static async updateGenerationMetadata(generationId: number, duration: number, count: number): Promise<void> {
