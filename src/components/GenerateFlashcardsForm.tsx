@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import PropTypes from "prop-types";
 
 interface GenerateFlashcardsFormProps {
   onSubmit: (sourceText: string) => void;
@@ -89,6 +90,13 @@ const GenerateFlashcardsForm: React.FC<GenerateFlashcardsFormProps> = ({
       </Button>
     </form>
   );
+};
+
+GenerateFlashcardsForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  initialSourceText: PropTypes.string.isRequired,
+  onTextChange: PropTypes.func,
 };
 
 export default GenerateFlashcardsForm;

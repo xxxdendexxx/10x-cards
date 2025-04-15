@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import PropTypes from "prop-types";
 
 // Import the view model interface
 interface FlashcardProposalViewModel {
@@ -135,6 +136,21 @@ const EditFlashcardModal: React.FC<EditFlashcardModalProps> = ({ proposal, isOpe
       </DialogContent>
     </Dialog>
   );
+};
+
+EditFlashcardModal.propTypes = {
+  proposal: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    front: PropTypes.string.isRequired,
+    back: PropTypes.string.isRequired,
+    originalFront: PropTypes.string.isRequired,
+    originalBack: PropTypes.string.isRequired,
+    status: PropTypes.oneOf(["pending", "accepted", "rejected", "edited"]).isRequired,
+    source: PropTypes.oneOf(["ai-full", "ai-edited"]).isRequired,
+  }),
+  isOpen: PropTypes.bool.isRequired,
+  onSave: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default EditFlashcardModal;

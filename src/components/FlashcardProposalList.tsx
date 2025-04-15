@@ -1,4 +1,5 @@
 import FlashcardProposalItem from "./FlashcardProposalItem";
+import PropTypes from "prop-types";
 
 // Import the view model interface from hook
 interface FlashcardProposalViewModel {
@@ -47,6 +48,23 @@ const FlashcardProposalList: React.FC<FlashcardProposalListProps> = ({ proposals
       </div>
     </div>
   );
+};
+
+FlashcardProposalList.propTypes = {
+  proposals: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      front: PropTypes.string.isRequired,
+      back: PropTypes.string.isRequired,
+      originalFront: PropTypes.string.isRequired,
+      originalBack: PropTypes.string.isRequired,
+      status: PropTypes.oneOf(["pending", "accepted", "rejected", "edited"]).isRequired,
+      source: PropTypes.oneOf(["ai-full", "ai-edited"]).isRequired,
+    })
+  ).isRequired,
+  onAccept: PropTypes.func.isRequired,
+  onReject: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired,
 };
 
 export default FlashcardProposalList;
