@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import PropTypes from "prop-types";
 
 // Import the view model interface
 interface FlashcardProposalViewModel {
@@ -127,6 +128,21 @@ const FlashcardProposalItem: React.FC<FlashcardProposalItemProps> = ({ proposal,
       </CardFooter>
     </Card>
   );
+};
+
+FlashcardProposalItem.propTypes = {
+  proposal: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    front: PropTypes.string.isRequired,
+    back: PropTypes.string.isRequired,
+    originalFront: PropTypes.string.isRequired,
+    originalBack: PropTypes.string.isRequired,
+    status: PropTypes.oneOf(["pending", "accepted", "rejected", "edited"]).isRequired,
+    source: PropTypes.oneOf(["ai-full", "ai-edited"]).isRequired,
+  }).isRequired,
+  onAccept: PropTypes.func.isRequired,
+  onReject: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired,
 };
 
 export default FlashcardProposalItem;
