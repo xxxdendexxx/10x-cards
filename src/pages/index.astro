@@ -1,8 +1,13 @@
 ---
-import Welcome from "../components/Welcome.astro";
-import Layout from "../layouts/Layout.astro";
+// Automatic redirect to the flashcards generation page
 ---
 
-<Layout>
-  <Welcome />
-</Layout>
+<meta http-equiv="refresh" content="0;url=/generate" />
+
+<script>
+  window.location.href = "/generate";
+</script>
+
+<noscript>
+  <p>Przekierowanie na <a href="/generate">stronę generowania fiszek</a>.</p>
+</noscript>

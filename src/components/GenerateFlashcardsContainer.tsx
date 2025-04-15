@@ -1,9 +1,10 @@
+import { useEffect } from "react";
 import useGenerateFlashcards from "../hooks/useGenerateFlashcards";
 import GenerateFlashcardsForm from "./GenerateFlashcardsForm";
 import FlashcardProposalList from "./FlashcardProposalList";
 import SaveApprovedButton from "./SaveApprovedButton";
 import EditFlashcardModal from "./EditFlashcardModal";
-import { toast } from "sonner";
+import { toast, Toaster } from "sonner";
 
 const GenerateFlashcardsContainer: React.FC = () => {
   const {
@@ -26,14 +27,24 @@ const GenerateFlashcardsContainer: React.FC = () => {
     handleSaveApproved,
   } = useGenerateFlashcards();
 
-  // Display errors using toast
-  if (errorGenerate) {
-    toast.error("Failed to generate flashcards. Please try again.");
-  }
+  // Display errors using toast when they change
+  useEffect(() => {
+    if (errorGenerate) {
+      toast.error("Failed to generate flashcards", {
+        description: "There was an error when trying to generate flashcards. Please try again.",
+        duration: 5000,
+      });
+    }
+  }, [errorGenerate]);
 
-  if (errorSave) {
-    toast.error("Failed to save flashcards. Please try again.");
-  }
+  useEffect(() => {
+    if (errorSave) {
+      toast.error("Failed to save flashcards", {
+        description: "There was an error when saving your flashcards. Please try again.",
+        duration: 5000,
+      });
+    }
+  }, [errorSave]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -41,6 +52,7 @@ const GenerateFlashcardsContainer: React.FC = () => {
         onSubmit={handleGenerateSubmit}
         isLoading={isLoadingGenerate}
         initialSourceText={sourceText}
+        onTextChange={handleSourceTextChange}
       />
 
       {proposals.length > 0 && (
@@ -62,6 +74,8 @@ const GenerateFlashcardsContainer: React.FC = () => {
         onSave={handleModalSave}
         onClose={handleModalClose}
       />
+
+      <Toaster position="top-right" richColors />
     </div>
   );
 };

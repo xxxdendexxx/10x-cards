@@ -1,6 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { toast } from "sonner";
 import type {
-  FlashcardProposalDTO,
   GenerationCreateResponseDTO,
   GenerateFlashcardProposalsCommand,
   FlashcardCreateDTO,
@@ -8,7 +8,7 @@ import type {
 } from "../types";
 
 // ViewModel for UI representation of flashcard proposals
-interface FlashcardProposalViewModel {
+export interface FlashcardProposalViewModel {
   id: string;
   front: string;
   back: string;
@@ -29,6 +29,17 @@ const useGenerateFlashcards = () => {
   const [editingProposal, setEditingProposal] = useState<FlashcardProposalViewModel | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [generationId, setGenerationId] = useState<number | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // Show success toast when flashcards are saved
+  useEffect(() => {
+    if (saveSuccess) {
+      toast.success("Flashcards saved successfully", {
+        description: "Your approved flashcards have been saved to your collection.",
+      });
+      setSaveSuccess(false);
+    }
+  }, [saveSuccess]);
 
   // Derived state
   const canSave = proposals.some((p) => p.status === "accepted" || p.status === "edited");
@@ -70,6 +81,11 @@ const useGenerateFlashcards = () => {
 
       setProposals(proposalViewModels);
       setGenerationId(data.generation_id);
+
+      // Show success notification with count
+      toast.success(`Generated ${data.generated_count} flashcard proposals`, {
+        description: "Review each proposal and accept, edit, or reject it.",
+      });
     } catch (err) {
       console.error("Error generating flashcards:", err);
       setErrorGenerate(err instanceof Error ? err : new Error(String(err)));
@@ -144,6 +160,7 @@ const useGenerateFlashcards = () => {
       setProposals([]);
       setSourceText("");
       setGenerationId(null);
+      setSaveSuccess(true);
     } catch (err) {
       console.error("Error saving flashcards:", err);
       setErrorSave(err instanceof Error ? err : new Error(String(err)));
