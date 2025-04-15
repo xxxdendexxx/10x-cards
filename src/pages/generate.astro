@@ -1,0 +1,11 @@
+---
+import Layout from "../layouts/Layout.astro";
+import GenerateFlashcardsContainer from "../components/GenerateFlashcardsContainer";
+---
+
+<Layout title="Generate Flashcards">
+  <main class="container max-w-4xl mx-auto py-8 px-4">
+    <h1 class="text-3xl font-bold mb-6">Generate Flashcards</h1>
+    <GenerateFlashcardsContainer client:load />
+  </main>
+</Layout>
