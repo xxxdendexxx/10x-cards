@@ -1,26 +1,26 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import type { GenerateFlashcardProposalsCommand, GenerationCreateResponseDTO } from "../../types";
-import { GenerationService, MockAIService } from "../../lib/services/generation.service";
+import { GenerationService } from "../../lib/services/generation.service";
 
 // Schema for validating the request body
 const generateFlashcardProposalsSchema = z.object({
   sourceText: z
     .string()
-    .min(1000, "Tekst źródłowy musi mieć co najmniej 1000 znaków")
-    .max(10000, "Tekst źródłowy nie może przekraczać 10000 znaków"),
+    .min(1000, "Source text must be at least 1000 characters long")
+    .max(10000, "Source text cannot exceed 10000 characters"),
 });
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    // 1. Parsowanie i walidacja danych wejściowych
+    // 1. Parse and validate input data
     const body = (await request.json()) as GenerateFlashcardProposalsCommand;
     const validationResult = generateFlashcardProposalsSchema.safeParse(body);
 
     if (!validationResult.success) {
       return new Response(
         JSON.stringify({
-          error: "Nieprawidłowe dane wejściowe",
+          error: "Invalid input data",
           details: validationResult.error.errors,
         }),
         {
@@ -31,34 +31,19 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const { sourceText } = validationResult.data;
-    const startTime = performance.now();
 
-    // 2. Inicjalizacja generacji w bazie danych
-    const generation = await GenerationService.createGeneration(sourceText);
-
-    // 3. Generowanie fiszek
-    const flashcards = await MockAIService.generateFlashcards(sourceText);
-    const generationDuration = Math.round(performance.now() - startTime);
-
-    // 4. Aktualizacja metadanych generacji
-    await GenerationService.updateGenerationMetadata(generation, generationDuration, flashcards.length);
-
-    const response: GenerationCreateResponseDTO = {
-      generation_id: generation,
-      generated_count: flashcards.length,
-      flashcards,
-    };
+    // 2. Generate flashcards using OpenRouter AI
+    const response = await GenerationService.generateFlashcards(sourceText);
 
     return new Response(JSON.stringify(response), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Błąd podczas przetwarzania żądania:", error);
+    console.error("Error processing request:", error);
     return new Response(
       JSON.stringify({
-        //error: "Wystąpił błąd wewnętrzny serwera",
-        error: error,
+        error: error instanceof Error ? error.message : "Internal server error",
       }),
       {
         status: 500,

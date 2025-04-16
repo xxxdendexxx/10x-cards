@@ -1,11 +1,35 @@
 import crypto from "crypto";
-
+import { OpenRouterService } from "./openrouter.service";
 import { DEFAULT_USER_ID, supabaseClient } from "../../db/supabase.client";
-import type { FlashcardProposalDTO } from "../../types";
+import type { GenerationCreateResponseDTO } from "../../types";
 
 export class GenerationService {
   private static generateHash(text: string): string {
     return crypto.createHash("md5").update(text).digest("hex");
+  }
+
+  private static openRouterService: OpenRouterService | null = null;
+
+  private static initializeOpenRouter(): void {
+    console.log("Environment variables:", {
+      OPENROUTER_API_KEY: import.meta.env.OPENROUTER_API_KEY,
+    });
+
+    if (!this.openRouterService) {
+      this.openRouterService = new OpenRouterService({
+        apiKey: import.meta.env.OPENROUTER_API_KEY || "",
+        endpoint: "https://openrouter.ai/api/v1/chat/completions",
+
+        systemMessage:
+          "You are an AI tutor that creates flashcards from provided text. Your task is to extract key concepts and create question-answer pairs that will help in learning the material. Each flashcard should be concise and focus on a single concept.",
+        modelName: "openai/gpt-4o-mini",
+        modelParams: {
+          temperature: 0.7,
+          max_tokens: 1000,
+          top_p: 0.9,
+        },
+      });
+    }
   }
 
   static async createGeneration(sourceText: string): Promise<number> {
@@ -17,7 +41,7 @@ export class GenerationService {
         user_id: DEFAULT_USER_ID,
         source_text_hash: sourceTextHash,
         source_text_length: sourceText.length,
-        model: "gpt-4", // TODO: Move to config
+        model: "openai/gpt-4o-mini",
         generation_duration: 0,
         generated_count: 0,
       })
@@ -25,7 +49,7 @@ export class GenerationService {
       .single();
 
     if (insertError || !generation) {
-      throw new Error(`Błąd podczas zapisywania metadanych generacji: ${insertError?.message}`);
+      throw new Error(`Error while saving generation metadata: ${insertError?.message}`);
     }
 
     return generation.id;
@@ -41,23 +65,51 @@ export class GenerationService {
       .eq("id", generationId);
 
     if (error) {
-      throw new Error(`Błąd podczas aktualizacji metadanych generacji: ${error.message}`);
+      throw new Error(`Error while updating generation metadata: ${error.message}`);
     }
   }
-}
 
-export class MockAIService {
-  static async generateFlashcards(sourceText: string): Promise<FlashcardProposalDTO[]> {
-    // Symulacja opóźnienia odpowiedzi od AI
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  static async generateFlashcards(sourceText: string): Promise<GenerationCreateResponseDTO> {
+    this.initializeOpenRouter();
+    if (!this.openRouterService) {
+      throw new Error("OpenRouter service not initialized. Please check your API key and endpoint configuration.");
+    }
 
-    // Przykładowe fiszki wygenerowane na podstawie długości tekstu
-    const numberOfFlashcards = Math.min(5, Math.floor(sourceText.length / 1000));
+    const startTime = Date.now();
+    const generationId = await this.createGeneration(sourceText);
 
-    return Array.from({ length: numberOfFlashcards }, (_, index) => ({
-      front: `Przykładowa fiszka ${index + 1} - przód`,
-      back: `Przykładowa fiszka ${index + 1} - tył`,
-      source: "ai-full" as const,
-    }));
+    try {
+      const prompt = `
+Please analyze the following text and create flashcards from it. For each important concept, create a question-answer pair.
+Format your response as a JSON array of flashcard objects, where each object has:
+- "front": The question or concept (max 200 characters)
+- "back": The answer or explanation (max 500 characters)
+- "source": Always set to "ai-full"
+
+Text to analyze:
+${sourceText}
+`;
+
+      const response = await this.openRouterService.sendMessage(prompt, {});
+
+      const generationDuration = Date.now() - startTime;
+      const parsedResponse = JSON.parse(response.answer);
+
+      if (!Array.isArray(parsedResponse.flashcards)) {
+        throw new Error("Invalid response format from AI: flashcards array not found");
+      }
+
+      // Update generation metadata with duration and count
+      await this.updateGenerationMetadata(generationId, generationDuration, parsedResponse.flashcards.length);
+
+      return {
+        generation_id: generationId,
+        generated_count: parsedResponse.flashcards.length,
+        flashcards: parsedResponse.flashcards,
+      };
+    } catch (error) {
+      console.error("Error generating flashcards:", error);
+      throw new Error(`Failed to generate flashcards: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
   }
 }
