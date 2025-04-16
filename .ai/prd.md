@@ -135,18 +135,11 @@ Tytuł: Bezpieczne logowanie i uwierzytelnianie
 Opis: System wymaga, aby użytkownik zalogował się przed uzyskaniem dostępu do funkcji aplikacji. Proces uwierzytelniania zabezpiecza dane użytkownika i ogranicza dostęp wyłącznie do autoryzowanych użytkowników.  
 Kryteria akceptacji:
 - Użytkownik musi przejść proces logowania przed uzyskaniem dostępu do głównych funkcjonalności.
-- Uwierzytelnianie odbywa się za pomocą bezpiecznych metod (np. HTTPS, tokeny).
+- Uwierzytelnianie odbywa się za pomocą bezpiecznych metod (np. tokeny).
 - Dostęp do danych użytkownika oraz funkcji zmiany konta jest zarezerwowany dla zalogowanych użytkowników.
 
-US-007
-Tytuł: Rejestracja konta
-Opis: Jako nowy użytkownik chcę się zarejestrować, aby mieć dostęp do własnych fiszek i móc korzystać z generowania fiszek przez AI.
-Kryteria akceptacji:
-- Formularz rejestracyjny zawiera pola na adres e-mail i hasło.
-- Po poprawnym wypełnieniu formularza i weryfikacji danych konto jest aktywowane.
-- Użytkownik otrzymuje potwierdzenie pomyślnej rejestracji i zostaje zalogowany.
 
-US-008
+US-007
 Tytuł: Zarządzanie kontem użytkownika  
 Opis: Użytkownik może zmienić swoje hasło lub usunąć konto poprzez interfejs konta, wykorzystując funkcjonalności oferowane przez Supabase.  
 Kryteria akceptacji:
