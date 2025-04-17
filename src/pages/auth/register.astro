@@ -1,8 +1,10 @@
 ---
-import AuthLayout from "@/layouts/AuthLayout.astro";
+import Layout from "../../layouts/Layout.astro";
 import RegistrationForm from "@/components/auth/RegistrationForm";
 ---
 
-<AuthLayout title="Register">
-  <RegistrationForm client:load />
-</AuthLayout>
+<Layout title="Register">
+  <div class="flex items-center justify-center min-h-[calc(100vh-theme(spacing.24))]">
+    <RegistrationForm client:load />
+  </div>
+</Layout>

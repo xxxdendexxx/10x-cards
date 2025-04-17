@@ -1,8 +1,10 @@
 ---
-import AuthLayout from "@/layouts/AuthLayout.astro";
+import Layout from "../../layouts/Layout.astro";
 import LoginForm from "@/components/auth/LoginForm";
 ---
 
-<AuthLayout title="Login">
-  <LoginForm client:load />
-</AuthLayout>
+<Layout title="Login">
+  <div class="flex items-center justify-center min-h-[calc(100vh-theme(spacing.24))]">
+    <LoginForm client:load />
+  </div>
+</Layout>
