@@ -1,0 +1,33 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+
+// TODO: Add middleware logic check here or in middleware file
+// import { Astro } from 'astro';
+// if (!Astro.locals.user) {
+// 	return Astro.redirect('/auth/login');
+// }
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<BaseLayout title={title}>
+  <header>
+    {/* TODO: Add navigation for logged-in users */}
+    <nav>
+      <a href="/">Home</a>
+      <form action="/api/auth/logout" method="post">
+        <button type="submit">Logout</button>
+      </form>
+    </nav>
+  </header>
+  <main class="p-4">
+    <slot />
+  </main>
+  <footer>
+    {/* Footer content */}
+  </footer>
+</BaseLayout>
