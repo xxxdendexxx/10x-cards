@@ -7,11 +7,11 @@ const PUBLIC_PATHS = [
   "/auth/login",
   "/auth/register",
   // Add other public pages like reset password if they exist
-  // "/auth/reset-password",
+  "/auth/reset-password",
   "/api/auth/login",
   "/api/auth/register",
   // Add other public API endpoints if they exist
-  // "/api/auth/reset-password",
+  "/api/auth/reset-password",
 ];
 
 export const onRequest = defineMiddleware(async (context, next) => {
