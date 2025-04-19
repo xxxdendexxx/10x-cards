@@ -58,8 +58,3 @@ export const createSupabaseServerInstance = (context: { headers: Headers; cookie
 
   return supabase;
 };
-
-// Remove the old client export and potentially the DEFAULT_USER_ID
-// export const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
-// export type SupabaseClient = typeof supabaseClient;
-// export const DEFAULT_USER_ID = "eeaf46cc-2901-4bd2-a4d2-40ae006063c2"; // Remove if not needed elsewhere

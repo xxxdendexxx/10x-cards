@@ -1,8 +1,9 @@
 // Import necessary modules
+import type { APIRoute } from "astro";
 import { z } from "zod";
 import type { CreateFlashcardCommand } from "../../types";
 import { createFlashcards } from "../../lib/services/flashcards";
-import { DEFAULT_USER_ID } from "../../db/supabase.client";
+import { createSupabaseServerInstance } from "../../db/supabase.client";
 
 // Define flashcard schema with validation rules
 const flashcardSchema = z
@@ -32,10 +33,20 @@ const createFlashcardCommandSchema = z.object({
 });
 
 // POST endpoint for creating flashcards
-export async function POST({ request }: { request: Request }) {
+export const POST: APIRoute = async (context) => {
+  // Check if user is authenticated
+  if (!context.locals.user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const userId = context.locals.user.id;
+
   try {
     // Step 2: Parse and validate request body
-    const body = await request.json();
+    const body = await context.request.json();
     let parsedData: CreateFlashcardCommand;
     try {
       parsedData = createFlashcardCommandSchema.parse(body);
@@ -47,8 +58,11 @@ export async function POST({ request }: { request: Request }) {
       });
     }
 
-    // Step 3: Process creation of flashcards
-    const createdFlashcards = await createFlashcards(parsedData, DEFAULT_USER_ID);
+    // Create Supabase client instance
+    const supabase = createSupabaseServerInstance({ cookies: context.cookies, headers: context.request.headers });
+
+    // Step 3: Process creation of flashcards, passing supabase instance and userId
+    const createdFlashcards = await createFlashcards(parsedData, userId, supabase);
 
     // Respond with the created flashcards
     return new Response(JSON.stringify({ flashcards: createdFlashcards }), {
@@ -63,4 +77,4 @@ export async function POST({ request }: { request: Request }) {
       headers: { "Content-Type": "application/json" },
     });
   }
-}
+};

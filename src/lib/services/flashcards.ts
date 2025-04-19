@@ -4,10 +4,15 @@
  * In a real scenario, this would include a database transaction via Supabase client.
  */
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "../../db/database.types";
 import type { CreateFlashcardCommand, FlashcardDTO, FlashcardInsert } from "../../types";
-import { supabaseClient } from "../../db/supabase.client";
 
-export async function createFlashcards(command: CreateFlashcardCommand, userId: string): Promise<FlashcardDTO[]> {
+export async function createFlashcards(
+  command: CreateFlashcardCommand,
+  userId: string,
+  supabase: SupabaseClient<Database>
+): Promise<FlashcardDTO[]> {
   // Prepare records for insertion into the flashcards table
   const records: FlashcardInsert[] = command.flashcards.map((card) => ({
     id: crypto.randomUUID(),
@@ -20,8 +25,8 @@ export async function createFlashcards(command: CreateFlashcardCommand, userId: 
     updated_at: new Date().toISOString(),
   }));
 
-  // Insert records into the flashcards table using Supabase client
-  const { data, error } = await supabaseClient.from("flashcards").insert(records).select();
+  // Insert records into the flashcards table using the passed Supabase client
+  const { data, error } = await supabase.from("flashcards").insert(records).select();
 
   if (error) {
     throw new Error(`Supabase insert error: ${error.message}`);

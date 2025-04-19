@@ -1,7 +1,8 @@
 import crypto from "crypto";
 import { OpenRouterService } from "./openrouter.service";
-import { DEFAULT_USER_ID, supabaseClient } from "../../db/supabase.client";
 import type { GenerationCreateResponseDTO } from "../../types";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "../../db/database.types";
 
 export class GenerationService {
   private static generateHash(text: string): string {
@@ -32,13 +33,17 @@ export class GenerationService {
     }
   }
 
-  static async createGeneration(sourceText: string): Promise<number> {
+  static async createGeneration(
+    sourceText: string,
+    userId: string,
+    supabase: SupabaseClient<Database>
+  ): Promise<number> {
     const sourceTextHash = this.generateHash(sourceText);
 
-    const { data: generation, error: insertError } = await supabaseClient
+    const { data: generation, error: insertError } = await supabase
       .from("generations")
       .insert({
-        user_id: DEFAULT_USER_ID,
+        user_id: userId,
         source_text_hash: sourceTextHash,
         source_text_length: sourceText.length,
         model: "openai/gpt-4o-mini",
@@ -55,8 +60,13 @@ export class GenerationService {
     return generation.id;
   }
 
-  static async updateGenerationMetadata(generationId: number, duration: number, count: number): Promise<void> {
-    const { error } = await supabaseClient
+  static async updateGenerationMetadata(
+    generationId: number,
+    duration: number,
+    count: number,
+    supabase: SupabaseClient<Database>
+  ): Promise<void> {
+    const { error } = await supabase
       .from("generations")
       .update({
         generation_duration: duration,
@@ -69,14 +79,18 @@ export class GenerationService {
     }
   }
 
-  static async generateFlashcards(sourceText: string): Promise<GenerationCreateResponseDTO> {
+  static async generateFlashcards(
+    sourceText: string,
+    userId: string,
+    supabase: SupabaseClient<Database>
+  ): Promise<GenerationCreateResponseDTO> {
     this.initializeOpenRouter();
     if (!this.openRouterService) {
       throw new Error("OpenRouter service not initialized. Please check your API key and endpoint configuration.");
     }
 
     const startTime = Date.now();
-    const generationId = await this.createGeneration(sourceText);
+    const generationId = await this.createGeneration(sourceText, userId, supabase);
 
     try {
       const prompt = `
@@ -99,8 +113,7 @@ ${sourceText}
         throw new Error("Invalid response format from AI: flashcards array not found");
       }
 
-      // Update generation metadata with duration and count
-      await this.updateGenerationMetadata(generationId, generationDuration, parsedResponse.flashcards.length);
+      await this.updateGenerationMetadata(generationId, generationDuration, parsedResponse.flashcards.length, supabase);
 
       return {
         generation_id: generationId,

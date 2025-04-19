@@ -2,10 +2,10 @@
 import Layout from "../layouts/Layout.astro";
 import GenerateFlashcardsContainer from "../components/GenerateFlashcardsContainer";
 
-// Redirect if user is not logged in
-if (!Astro.locals.user) {
-  return Astro.redirect("/auth/login");
-}
+// // Redirect if user is not logged in
+// if (!Astro.locals.user) {
+//   return Astro.redirect("/auth/login");
+// }
 
 // Set page metadata
 const title = "Generate Flashcards | 10x Cards";
