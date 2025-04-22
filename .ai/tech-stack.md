@@ -104,3 +104,20 @@ Zaproponowany stos technologiczny:
 
 > **Ostateczny wniosek:** Wybrany stos technologiczny jest dobrze dopasowany do potrzeb określonych w PRD. Umożliwia szybkie wdrożenie MVP, oferuje skalowalność oraz jest wystarczająco elastyczny, by rozwijać kolejne funkcjonalności produktu, przy jednoczesnym zachowaniu odpowiedniego poziomu bezpieczeństwa i kontroli kosztów.
 
+---
+
+### 7. Testowanie
+
+- **Testy jednostkowe:**  
+  - **Vitest:** Framework do testów jednostkowych idealnie dopasowany do ekosystemu Vite/Astro, co zapewnia spójność z resztą stacku technologicznego. Oferuje szybkie wykonywanie testów i wsparcie dla TypeScript.
+  - **React Testing Library:** Biblioteka umożliwiająca testowanie komponentów React w sposób zorientowany na użytkownika (testowanie zachowań, a nie implementacji), co zwiększa wiarygodność testów.
+  - **Storybook:** Narzędzie do izolowanego testowania komponentów UI, umożliwiające sprawdzenie różnych stanów i wariantów komponentów, co przyspiesza proces developmentu i ułatwia testowanie wizualne.
+
+- **Testy E2E (End-to-End):**  
+  - **Playwright:** Nowoczesny framework do testów E2E, obsługujący wszystkie popularne przeglądarki. Oferuje mocne wsparcie dla automatyzacji i testowania nowoczesnych aplikacji webowych, w tym komponentów wykorzystujących Shadcn/ui i Tailwind.
+
+- **Integracja z CI/CD:**  
+  Narzędzia testowe są w pełni kompatybilne z GitHub Actions, co umożliwia automatyczne uruchamianie testów w procesie CI/CD. Testy jednostkowe mogą być wykonywane przy każdym commit'cie, natomiast bardziej czasochłonne testy E2E mogą być uruchamiane przed deploy'em na środowisko stagingowe.
+
+> **Wniosek:** Wybrane technologie testowe zapewniają kompleksowe pokrycie zarówno na poziomie jednostkowym, jak i end-to-end. Są one dobrze zintegrowane z głównym stosem technologicznym projektu, co pozwala na efektywne wykrywanie błędów i zapewnienie jakości aplikacji od wczesnych etapów rozwoju.
+

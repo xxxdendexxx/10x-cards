@@ -17,6 +17,9 @@
 - **Backend:** Supabase
 - **AI Integration:** Openrouter.ai
 - **CI/CD & Hosting:** GitHub Actions, DigitalOcean
+- **Testing:** 
+  - **Unit Testing:** Vitest, React Testing Library, Storybook
+  - **E2E Testing:** Playwright
 
 ## Getting Started Locally
 
@@ -49,6 +52,10 @@ From the project root, you can run:
 - `npm run lint` — Lints the source files.
 - `npm run lint:fix` — Automatically fixes linting errors.
 - `npm run format` — Formats the code using Prettier.
+- `npm run test` — Runs unit tests with Vitest.
+- `npm run test:ui` — Opens the Vitest UI for interactive testing.
+- `npm run storybook` — Starts Storybook for component development.
+- `npm run test:e2e` — Runs E2E tests with Playwright.
 
 ## Project Scope
 The MVP of **AI Flashcards** includes:
