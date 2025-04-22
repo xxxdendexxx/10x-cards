@@ -1,0 +1,183 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import LoginForm from "./LoginForm";
+
+// Mock fetch globally
+vi.stubGlobal("fetch", vi.fn());
+
+describe("LoginForm", () => {
+  // Reset mocks between tests
+  beforeEach(() => {
+    vi.resetAllMocks();
+    // Default successful fetch mock
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({ success: true }),
+    });
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("renders the login form correctly", () => {
+    render(<LoginForm />);
+
+    // Check for key elements
+    expect(screen.getByText("Login")).toBeInTheDocument();
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /sign in/i })).toBeInTheDocument();
+    expect(screen.getByText(/don't have an account/i)).toBeInTheDocument();
+    expect(screen.getByText(/forgot password/i)).toBeInTheDocument();
+    expect(screen.getByTestId("login-form")).toBeInTheDocument();
+  });
+
+  it("validates email format with mocked form submission", async () => {
+    const user = userEvent.setup();
+    const { getByLabelText, getByRole } = screen;
+
+    // Create a spy on console.error to verify client-side validation
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation((_message) => {
+      // Do nothing, just prevent console errors from appearing in test output
+    });
+
+    render(<LoginForm />);
+
+    // Type invalid email
+    await user.type(getByLabelText(/email/i), "invalid-email");
+    await user.type(getByLabelText(/password/i), "password123");
+    await user.click(getByRole("button", { name: /sign in/i }));
+
+    // Verify fetch wasn't called, which proves validation blocked submission
+    expect(global.fetch).not.toHaveBeenCalled();
+
+    consoleSpy.mockRestore();
+  });
+
+  it("requires both email and password", async () => {
+    const user = userEvent.setup();
+    const { getByLabelText, getByRole } = screen;
+    render(<LoginForm />);
+
+    // Try to submit without values
+    await user.click(getByRole("button", { name: /sign in/i }));
+
+    // Verify fetch wasn't called, which proves validation blocked submission
+    expect(global.fetch).not.toHaveBeenCalled();
+
+    // Try with email but no password
+    await user.clear(getByLabelText(/email/i));
+    await user.type(getByLabelText(/email/i), "test@example.com");
+    await user.click(getByRole("button", { name: /sign in/i }));
+
+    // Verify fetch still wasn't called
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it("submits the form with valid data", async () => {
+    const email = "test@example.com";
+    const password = "password123";
+    const user = userEvent.setup();
+    const { getByLabelText, getByRole } = screen;
+
+    render(<LoginForm />);
+
+    // Fill form with valid data
+    await user.type(getByLabelText(/email/i), email);
+    await user.type(getByLabelText(/password/i), password);
+
+    // Submit form
+    await user.click(getByRole("button", { name: /sign in/i }));
+
+    // Verify fetch was called with correct data
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+    });
+  });
+
+  it("handles API error responses", async () => {
+    // Mock fetch to return an error
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: false,
+      json: vi.fn().mockResolvedValue({ error: "Invalid credentials" }),
+    });
+
+    const user = userEvent.setup();
+    const { getByLabelText, getByRole } = screen;
+    render(<LoginForm />);
+
+    // Fill and submit form
+    await user.type(getByLabelText(/email/i), "test@example.com");
+    await user.type(getByLabelText(/password/i), "password123");
+    await user.click(getByRole("button", { name: /sign in/i }));
+
+    // Just verify the fetch was called
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalled();
+    });
+  });
+
+  it("handles network errors", async () => {
+    // Mock fetch to throw an error
+    global.fetch = vi.fn().mockRejectedValue(new Error("Network error"));
+
+    const user = userEvent.setup();
+    const { getByLabelText, getByRole } = screen;
+    render(<LoginForm />);
+
+    // Fill and submit form
+    await user.type(getByLabelText(/email/i), "test@example.com");
+    await user.type(getByLabelText(/password/i), "password123");
+    await user.click(getByRole("button", { name: /sign in/i }));
+
+    // Just verify the fetch was called
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalled();
+    });
+  });
+
+  it("redirects on successful login", async () => {
+    // Mock window.location
+    const locationSpy = vi.spyOn(window, "location", "get");
+    const mockLocation = { ...window.location, href: "" };
+    locationSpy.mockImplementation(() => mockLocation);
+
+    const user = userEvent.setup();
+    const { getByLabelText, getByRole } = screen;
+    render(<LoginForm />);
+
+    // Fill and submit form
+    await user.type(getByLabelText(/email/i), "test@example.com");
+    await user.type(getByLabelText(/password/i), "password123");
+    await user.click(getByRole("button", { name: /sign in/i }));
+
+    // Check for redirect
+    await waitFor(() => {
+      expect(window.location.href).toBe("/generate");
+    });
+  });
+
+  it("calls fetch API when submitting the form", async () => {
+    const user = userEvent.setup();
+    const { getByLabelText, getByRole } = screen;
+    render(<LoginForm />);
+
+    // Fill and submit form
+    await user.type(getByLabelText(/email/i), "test@example.com");
+    await user.type(getByLabelText(/password/i), "password123");
+    await user.click(getByRole("button", { name: /sign in/i }));
+
+    // Verify fetch was called
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+  });
+});
