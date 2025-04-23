@@ -1,17 +1,23 @@
 import { defineConfig, devices } from "@playwright/test";
+// playwright.config.ts
+import dotenv from "dotenv";
+import path from "path";
+dotenv.config({ path: path.resolve(process.cwd(), ".env.test") });
 
 export default defineConfig({
-  testDir: "./e2e",
+  testDir: "./tests",
   /* Maksymalny czas testu przed uznaniem za nieudany */
   timeout: 30 * 1000,
   /* Uruchamianie testów w trybie losowym */
   fullyParallel: true,
-  /* Tryb wyszukiwania (słowo kluczowe "test" w nazwach plików) */
-  grep: /.*\.test\.ts/,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
   /* Konfiguracja reporterów */
-  reporter: [["html"], ["list"]],
+  reporter: "html",
   /* Wspólne ustawienia dla wszystkich projektów */
   use: {
+    baseURL: process.env.BASE_URL || "http://localhost:3000",
     /* Zrzuty ekranu przy niepowodzeniu testu */
     screenshot: "only-on-failure",
     /* Nagrywanie wideo przy niepowodzeniu testu */
@@ -34,7 +40,7 @@ export default defineConfig({
   /* Webserver do uruchamiania aplikacji podczas testów */
   webServer: {
     command: "npm run dev",
-    port: 4321,
+    port: 3000,
     reuseExistingServer: !process.env.CI,
   },
 });

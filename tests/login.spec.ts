@@ -1,0 +1,81 @@
+import { test, expect } from "@playwright/test";
+import { faker } from "@faker-js/faker";
+import { LoginPage } from "./pages/login.page";
+
+test.describe("Login form validation", () => {
+  let loginPage: LoginPage;
+
+  test.beforeEach(async ({ page }) => {
+    loginPage = new LoginPage(page);
+    await loginPage.goto();
+  });
+
+  test("shows validation error for invalid email format", async () => {
+    // Generate random invalid email and password
+    const invalidEmail = "invalid-email";
+    const randomPassword = faker.internet.password();
+
+    // Fill in the form with invalid data and submit
+    await loginPage.fillLoginForm(invalidEmail, randomPassword);
+    await loginPage.submitForm();
+
+    // Verify error message for invalid email appears
+    await loginPage.expectErrorMessage("Please enter a valid email address.");
+  });
+
+  test("shows validation error when fields are empty", async () => {
+    // Submit form without filling fields
+    await loginPage.submitForm();
+
+    // Verify error message appears
+    await loginPage.expectErrorMessage("Both email and password are required.");
+  });
+
+  test("handles server error for invalid credentials", async () => {
+    // Generate random valid email and password
+    const validEmail = faker.internet.email();
+    const randomPassword = faker.internet.password();
+
+    // Mock the server response for invalid credentials
+    await loginPage.mockInvalidCredentialsResponse();
+
+    // Fill in the form with valid format but non-existent credentials and submit
+    await loginPage.fillLoginForm(validEmail, randomPassword);
+    await loginPage.submitForm();
+
+    // Verify error message for invalid credentials appears
+    await loginPage.expectErrorMessage("Invalid email or password");
+  });
+
+  test("shows loader while submitting and disables inputs", async () => {
+    // Mock the server response with a delay to observe loading state
+    await loginPage.mockDelayedResponse(1000);
+
+    // Fill form with valid format data and submit
+    await loginPage.fillLoginForm(faker.internet.email(), faker.internet.password());
+    await loginPage.submitForm();
+
+    // Verify loading state
+    await loginPage.expectFormIsLoading();
+  });
+
+  test("navigates to register page when clicking sign up link", async ({ page }) => {
+    await loginPage.navigateToSignUp();
+    await expect(page).toHaveURL("/auth/register");
+  });
+
+  test("navigates to forgot password page when clicking forgot password link", async ({ page }) => {
+    await loginPage.navigateToForgotPassword();
+    await expect(page).toHaveURL("/auth/recover-password");
+  });
+
+  test("login form renders correctly", async () => {
+    // Visual comparison test for the initial login form state
+    await loginPage.takeFormScreenshot("login-form.png");
+
+    // Test error state visual appearance
+    await loginPage.submitForm();
+    await loginPage.expectErrorMessage("Both email and password are required.");
+    await loginPage.takeFormScreenshot("login-form-error.png");
+  });
+});

@@ -68,15 +68,21 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps = {}) {
   };
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm" data-testid="login-card">
       <CardHeader>
-        <CardTitle className="text-2xl">Login</CardTitle>
-        <CardDescription>Enter your email below to login to your account.</CardDescription>
+        <CardTitle className="text-2xl" data-testid="login-title">
+          Login
+        </CardTitle>
+        <CardDescription data-testid="login-description">
+          Enter your email below to login to your account.
+        </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit} data-testid="login-form">
         <CardContent className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
+          <div className="grid gap-2" data-testid="email-field-container">
+            <Label htmlFor="email" data-testid="email-label">
+              Email
+            </Label>
             <Input
               id="email"
               type="email"
@@ -85,10 +91,13 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps = {}) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
+              data-testid="email-input"
             />
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="password">Password</Label>
+          <div className="grid gap-2" data-testid="password-field-container">
+            <Label htmlFor="password" data-testid="password-label">
+              Password
+            </Label>
             <Input
               id="password"
               type="password"
@@ -96,21 +105,26 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps = {}) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
+              data-testid="password-input"
             />
           </div>
         </CardContent>
         <CardFooter className="flex flex-col items-start">
-          {error && <p className="text-red-500 text-sm mb-2 text-center w-full">{error}</p>}
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          {error && (
+            <p className="text-red-500 text-sm mb-2 text-center w-full" data-testid="login-error-message">
+              {error}
+            </p>
+          )}
+          <Button type="submit" className="w-full" disabled={isLoading} data-testid="login-submit-button">
             {isLoading ? <>Signing in...</> : "Sign in"}
           </Button>
-          <div className="mt-4 text-center text-sm w-full">
+          <div className="mt-4 text-center text-sm w-full" data-testid="login-links">
             Don&apos;t have an account?{" "}
-            <a href="/auth/register" className="underline">
+            <a href="/auth/register" className="underline" data-testid="signup-link">
               Sign up
             </a>
             <br />
-            <a href="/auth/recover-password" className="underline text-xs">
+            <a href="/auth/recover-password" className="underline text-xs" data-testid="forgot-password-link">
               Forgot password?
             </a>
           </div>
