@@ -39,7 +39,7 @@ describe("LoginForm", () => {
     const { getByLabelText, getByRole } = screen;
 
     // Create a spy on console.error to verify client-side validation
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation((_message) => {
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {
       // Do nothing, just prevent console errors from appearing in test output
     });
 
@@ -79,10 +79,11 @@ describe("LoginForm", () => {
   it("submits the form with valid data", async () => {
     const email = "test@example.com";
     const password = "password123";
+    const onLoginSuccess = vi.fn();
     const user = userEvent.setup();
     const { getByLabelText, getByRole } = screen;
 
-    render(<LoginForm />);
+    render(<LoginForm onLoginSuccess={onLoginSuccess} />);
 
     // Fill form with valid data
     await user.type(getByLabelText(/email/i), email);
@@ -100,6 +101,7 @@ describe("LoginForm", () => {
         },
         body: JSON.stringify({ email, password }),
       });
+      expect(onLoginSuccess).toHaveBeenCalled();
     });
   });
 
@@ -145,6 +147,25 @@ describe("LoginForm", () => {
   });
 
   it("redirects on successful login", async () => {
+    // Use a mock function for onLoginSuccess
+    const onLoginSuccess = vi.fn();
+
+    const user = userEvent.setup();
+    const { getByLabelText, getByRole } = screen;
+    render(<LoginForm onLoginSuccess={onLoginSuccess} />);
+
+    // Fill and submit form
+    await user.type(getByLabelText(/email/i), "test@example.com");
+    await user.type(getByLabelText(/password/i), "password123");
+    await user.click(getByRole("button", { name: /sign in/i }));
+
+    // Check if onLoginSuccess was called
+    await waitFor(() => {
+      expect(onLoginSuccess).toHaveBeenCalled();
+    });
+  });
+
+  it("falls back to window.location.href when onLoginSuccess is not provided", async () => {
     // Mock window.location
     const locationSpy = vi.spyOn(window, "location", "get");
     const mockLocation = { ...window.location, href: "" };
@@ -166,9 +187,12 @@ describe("LoginForm", () => {
   });
 
   it("calls fetch API when submitting the form", async () => {
+    // Use a mock function for onLoginSuccess to avoid window.location error
+    const onLoginSuccess = vi.fn();
+
     const user = userEvent.setup();
     const { getByLabelText, getByRole } = screen;
-    render(<LoginForm />);
+    render(<LoginForm onLoginSuccess={onLoginSuccess} />);
 
     // Fill and submit form
     await user.type(getByLabelText(/email/i), "test@example.com");
@@ -178,6 +202,7 @@ describe("LoginForm", () => {
     // Verify fetch was called
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledTimes(1);
+      expect(onLoginSuccess).toHaveBeenCalled();
     });
   });
 });

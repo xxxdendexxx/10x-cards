@@ -6,7 +6,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export default function LoginForm() {
+interface LoginFormProps {
+  onLoginSuccess?: () => void;
+}
+
+export default function LoginForm({ onLoginSuccess }: LoginFormProps = {}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +53,11 @@ export default function LoginForm() {
         setError(errorData.error || "Login failed. Please try again.");
       } else {
         // Successful login
-        window.location.href = "/generate"; // Redirect on success
+        if (onLoginSuccess) {
+          onLoginSuccess();
+        } else {
+          window.location.href = "/generate"; // Redirect on success if no callback provided
+        }
       }
     } catch (err) {
       console.error("Login error:", err);
