@@ -47,13 +47,24 @@ export class LoginPage {
 
   // Assertions
   async expectErrorMessage(message: string) {
+    await expect(this.page.getByTestId("login-error-message")).toBeAttached({ timeout: 10000 });
     const errorElement = this.page.getByTestId("login-error-message");
-    await expect(errorElement).toBeVisible();
+    console.log("errorElement", errorElement);
     await expect(errorElement).toHaveText(message);
+    await expect(errorElement).toBeVisible();
+  }
+
+  async expectEmailInputToBeInvalid() {
+    // Directly check the element's validity state using JavaScript
+    const isInvalid = await this.page
+      .getByTestId("email-input")
+      .evaluate((el) => !(el as HTMLInputElement).checkValidity());
+    expect(isInvalid).toBe(true);
   }
 
   async expectFormIsLoading() {
-    await expect(this.page.getByTestId("login-submit-button")).toHaveText("Signing in...");
+    const submitButton = this.page.getByTestId("login-submit-button");
+    await expect(submitButton).toHaveText("Signing in...", { timeout: 5000 });
     await expect(this.page.getByTestId("email-input")).toBeDisabled();
     await expect(this.page.getByTestId("password-input")).toBeDisabled();
   }
