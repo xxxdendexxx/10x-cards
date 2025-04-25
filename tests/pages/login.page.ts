@@ -47,9 +47,9 @@ export class LoginPage {
 
   // Assertions
   async expectErrorMessage(message: string) {
-    await expect(this.page.getByTestId("login-error-message")).toBeAttached({ timeout: 10000 });
+    await expect(this.page.getByTestId("login-error-message")).toBeAttached({ timeout: 5000 });
     const errorElement = this.page.getByTestId("login-error-message");
-    console.log("errorElement", errorElement);
+
     await expect(errorElement).toHaveText(message);
     await expect(errorElement).toBeVisible();
   }
@@ -60,6 +60,22 @@ export class LoginPage {
       .getByTestId("email-input")
       .evaluate((el) => !(el as HTMLInputElement).checkValidity());
     expect(isInvalid).toBe(true);
+  }
+
+  async expectEmailInputToBeRequiredInvalid() {
+    // Check validity state for missing value
+    const isMissing = await this.page
+      .getByTestId("email-input")
+      .evaluate((el) => (el as HTMLInputElement).validity.valueMissing);
+    expect(isMissing).toBe(true);
+  }
+
+  async expectPasswordInputToBeRequiredInvalid() {
+    // Check validity state for missing value
+    const isMissing = await this.page
+      .getByTestId("password-input")
+      .evaluate((el) => (el as HTMLInputElement).validity.valueMissing);
+    expect(isMissing).toBe(true);
   }
 
   async expectFormIsLoading() {
