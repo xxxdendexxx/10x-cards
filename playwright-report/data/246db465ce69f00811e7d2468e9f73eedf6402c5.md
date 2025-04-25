@@ -47,7 +47,7 @@ waiting for navigation to "**/auth/recover-password" until "load"
   14 |     // Generate random invalid email and password
   15 |     const invalidEmail = "invalid-email";
   16 |     const randomPassword = faker.internet.password();
-  17 |
+  17 |     console.log("fuck");
   18 |     // Fill in the form with invalid data and submit
   19 |     await loginPage.fillLoginForm(invalidEmail, randomPassword);
   20 |     await loginPage.submitForm();
@@ -104,16 +104,6 @@ waiting for navigation to "**/auth/recover-password" until "load"
      |                ^ Error: page.waitForURL: Test timeout of 30000ms exceeded.
   71 |     await expect(page).toHaveURL("/auth/recover-password");
   72 |   });
-  73 |
-  74 |   test("login form renders correctly", async () => {
-  75 |     // Visual comparison test for the initial login form state
-  76 |     await loginPage.takeFormScreenshot("login-form.png");
-  77 |
-  78 |     // Test error state visual appearance
-  79 |     await loginPage.submitForm();
-  80 |     await loginPage.expectErrorMessage("Both email and password are required.");
-  81 |     await loginPage.takeFormScreenshot("login-form-error.png");
-  82 |   });
-  83 | });
-  84 |
+  73 | });
+  74 |
 ```

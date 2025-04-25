@@ -23,9 +23,11 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps = {}) {
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    console.log("submit form");
     event.preventDefault();
     setError(null); // Clear previous errors
-
+    //setError("dupa");
+    //return;
     // Client-side validation
     if (!email || !password) {
       setError("Both email and password are required.");

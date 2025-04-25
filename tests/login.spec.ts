@@ -14,7 +14,7 @@ test.describe("Login form validation", () => {
     // Generate random invalid email and password
     const invalidEmail = "invalid-email";
     const randomPassword = faker.internet.password();
-
+    console.log("fuck");
     // Fill in the form with invalid data and submit
     await loginPage.fillLoginForm(invalidEmail, randomPassword);
     await loginPage.submitForm();
