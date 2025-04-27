@@ -47,12 +47,13 @@ const GenerateFlashcardsContainer: React.FC = () => {
   }, [errorSave]);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6" data-testid="generate-flashcards-container">
       <GenerateFlashcardsForm
         onSubmit={handleGenerateSubmit}
         isLoading={isLoadingGenerate}
         initialSourceText={sourceText}
         onTextChange={handleSourceTextChange}
+        data-testid="generate-flashcards-form"
       />
 
       {proposals.length > 0 && (
@@ -62,9 +63,15 @@ const GenerateFlashcardsContainer: React.FC = () => {
             onAccept={handleAccept}
             onReject={handleReject}
             onEdit={handleEditClick}
+            data-testid="flashcard-proposal-list"
           />
 
-          <SaveApprovedButton onClick={handleSaveApproved} isEnabled={canSave} isLoading={isLoadingSave} />
+          <SaveApprovedButton
+            onClick={handleSaveApproved}
+            isEnabled={canSave}
+            isLoading={isLoadingSave}
+            data-testid="save-approved-button"
+          />
         </>
       )}
 
@@ -73,6 +80,7 @@ const GenerateFlashcardsContainer: React.FC = () => {
         isOpen={isModalOpen}
         onSave={handleModalSave}
         onClose={handleModalClose}
+        data-testid="edit-flashcard-modal"
       />
 
       <Toaster position="top-right" richColors />

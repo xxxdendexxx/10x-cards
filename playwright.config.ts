@@ -5,7 +5,7 @@ import path from "path";
 dotenv.config({ path: path.resolve(process.cwd(), ".env.test") });
 
 export default defineConfig({
-  testDir: "./tests",
+  testDir: "./e2e/tests",
   /* Maksymalny czas testu przed uznaniem za nieudany */
   timeout: 30 * 1000,
   /* Uruchamianie testów w trybie losowym */

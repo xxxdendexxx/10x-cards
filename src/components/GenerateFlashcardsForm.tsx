@@ -8,6 +8,7 @@ interface GenerateFlashcardsFormProps {
   isLoading: boolean;
   initialSourceText: string;
   onTextChange?: (text: string) => void;
+  "data-testid"?: string;
 }
 
 const MIN_TEXT_LENGTH = 1000;
@@ -18,6 +19,7 @@ const GenerateFlashcardsForm: React.FC<GenerateFlashcardsFormProps> = ({
   isLoading,
   initialSourceText,
   onTextChange,
+  "data-testid": dataTestId,
 }) => {
   const [sourceText, setSourceText] = useState(initialSourceText);
   const [error, setError] = useState<string | null>(null);
@@ -53,9 +55,9 @@ const GenerateFlashcardsForm: React.FC<GenerateFlashcardsFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <label htmlFor="sourceText" className="text-sm font-medium">
+    <form onSubmit={handleSubmit} className="space-y-4" data-testid={dataTestId || "generate-form"}>
+      <div className="space-y-2" data-testid="source-text-container">
+        <label htmlFor="sourceText" className="text-sm font-medium" data-testid="source-text-label">
           Source Text
         </label>
         <Textarea
@@ -65,19 +67,25 @@ const GenerateFlashcardsForm: React.FC<GenerateFlashcardsFormProps> = ({
           placeholder="Enter your text here (minimum 1000 characters, maximum 10000 characters)"
           className="min-h-[200px]"
           disabled={isLoading}
+          data-testid="source-text-input"
         />
 
-        <div className="flex justify-between text-sm">
+        <div className="flex justify-between text-sm" data-testid="character-count-container">
           <span
             className={
               sourceText.length < MIN_TEXT_LENGTH || sourceText.length > MAX_TEXT_LENGTH
                 ? "text-red-500"
                 : "text-gray-500"
             }
+            data-testid="character-count"
           >
             {sourceText.length} / {MAX_TEXT_LENGTH} characters
           </span>
-          {error && <span className="text-red-500">{error}</span>}
+          {error && (
+            <span className="text-red-500" data-testid="source-text-error">
+              {error}
+            </span>
+          )}
         </div>
       </div>
 
@@ -85,8 +93,9 @@ const GenerateFlashcardsForm: React.FC<GenerateFlashcardsFormProps> = ({
         type="submit"
         disabled={!!error || sourceText.length < MIN_TEXT_LENGTH || isLoading}
         className="w-full sm:w-auto"
+        data-testid="generate-button"
       >
-        {isLoading ? "Generating..." : "Generate Flashcard Proposals"}
+        {isLoading ? <span data-testid="generating-state">Generating...</span> : "Generate Flashcard Proposals"}
       </Button>
     </form>
   );
@@ -97,6 +106,7 @@ GenerateFlashcardsForm.propTypes = {
   isLoading: PropTypes.bool.isRequired,
   initialSourceText: PropTypes.string.isRequired,
   onTextChange: PropTypes.func,
+  "data-testid": PropTypes.string,
 };
 
 export default GenerateFlashcardsForm;

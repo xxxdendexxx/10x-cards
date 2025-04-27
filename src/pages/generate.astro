@@ -12,10 +12,10 @@ const title = "Generate Flashcards | 10x Cards";
 ---
 
 <PrivateLayout title={title}>
-  <main class="container max-w-4xl mx-auto py-8 px-4 md:py-12">
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold mb-2">Generate Flashcards</h1>
-      <p class="text-gray-600">
+  <main class="container max-w-4xl mx-auto py-8 px-4 md:py-12" data-testid="generate-page-container">
+    <div class="mb-8" data-testid="generate-page-header">
+      <h1 class="text-3xl font-bold mb-2" data-testid="generate-page-title">Generate Flashcards</h1>
+      <p class="text-gray-600" data-testid="generate-page-description">
         Paste your text below to generate flashcard proposals. You can review, edit, and approve the generated
         flashcards before saving them to your collection.
       </p>

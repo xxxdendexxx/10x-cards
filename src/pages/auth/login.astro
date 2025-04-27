@@ -4,7 +4,10 @@ import LoginForm from "@/components/auth/LoginForm";
 ---
 
 <Layout title="Login">
-  <div class="flex items-center justify-center min-h-[calc(100vh-theme(spacing.24))]">
+  <div
+    class="flex items-center justify-center min-h-[calc(100vh-theme(spacing.24))]"
+    data-testid="login-page-container"
+  >
     <LoginForm client:load />
   </div>
 </Layout>

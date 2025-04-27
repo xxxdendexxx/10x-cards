@@ -47,6 +47,7 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps = {}) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
+        credentials: "same-origin",
       });
 
       if (!response.ok) {
@@ -118,7 +119,7 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps = {}) {
             </p>
           )}
           <Button type="submit" className="w-full" disabled={isLoading} data-testid="login-submit-button">
-            {isLoading ? <>Signing in...</> : "Sign in"}
+            {isLoading ? <span data-testid="login-loading-state">Signing in...</span> : "Sign in"}
           </Button>
           <div className="mt-4 text-center text-sm w-full" data-testid="login-links">
             Don&apos;t have an account?{" "}
