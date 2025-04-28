@@ -12,6 +12,9 @@ export default defineConfig({
   adapter: node({
     mode: "standalone",
   }),
+  experimental: {
+    session: true,
+  },
   integrations: [react(), sitemap()],
   server: { port: 3000 },
   vite: {
