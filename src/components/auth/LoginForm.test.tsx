@@ -99,6 +99,7 @@ describe("LoginForm", () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "same-origin",
         body: JSON.stringify({ email, password }),
       });
       expect(onLoginSuccess).toHaveBeenCalled();
