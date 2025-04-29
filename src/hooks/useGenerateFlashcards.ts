@@ -87,7 +87,7 @@ const useGenerateFlashcards = () => {
         description: "Review each proposal and accept, edit, or reject it.",
       });
     } catch (err) {
-      console.error("Error generating flashcards:", err);
+      // console.error("Error generating flashcards:", err);
       setErrorGenerate(err instanceof Error ? err : new Error(String(err)));
     } finally {
       setIsLoadingGenerate(false);
@@ -154,7 +154,7 @@ const useGenerateFlashcards = () => {
       }
 
       const data = await response.json();
-      console.log("Flashcards saved successfully:", data);
+      // console.log("Flashcards saved successfully:", data);
 
       // Clear the proposals after successful save
       setProposals([]);
@@ -162,7 +162,7 @@ const useGenerateFlashcards = () => {
       setGenerationId(null);
       setSaveSuccess(true);
     } catch (err) {
-      console.error("Error saving flashcards:", err);
+      // console.error("Error saving flashcards:", err);
       setErrorSave(err instanceof Error ? err : new Error(String(err)));
     } finally {
       setIsLoadingSave(false);

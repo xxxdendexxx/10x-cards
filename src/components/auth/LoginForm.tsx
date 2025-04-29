@@ -23,7 +23,7 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps = {}) {
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    console.log("submit form");
+    //console.log("submit form");
     event.preventDefault();
     setError(null); // Clear previous errors
     //setError("dupa");
@@ -63,7 +63,7 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps = {}) {
         }
       }
     } catch (err) {
-      console.error("Login error:", err);
+      //console.error("Login error:", err);
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);

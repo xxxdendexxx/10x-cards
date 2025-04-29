@@ -33,18 +33,18 @@ test.describe("Login flow", () => {
     await generatePage.goto();
 
     // Log current URL after navigation (might be redirected to login)
-    console.log("Current URL after navigation:", page.url());
+    //console.log("Current URL after navigation:", page.url());
 
     try {
       // Try to verify page components - will fail if redirected
       await expect(page).toHaveURL(/.*\/generate.*/);
       await expect(generatePage.title).toBeVisible({ timeout: 5000 });
-      console.log("Successfully found generate page components");
+      //console.log("Successfully found generate page components");
     } catch (error) {
-      console.log(
-        "Could not verify generate page - likely redirected:",
-        error instanceof Error ? error.message : String(error)
-      );
+      // console.log(
+      //   "Could not verify generate page - likely redirected:",
+      //   error instanceof Error ? error.message : String(error)
+      // );
 
       // Take screenshot for debugging
       await page.screenshot({ path: "test-results/generate-page-debug.png" });

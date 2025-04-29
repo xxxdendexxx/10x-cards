@@ -12,9 +12,9 @@ export class GenerationService {
   private static openRouterService: OpenRouterService | null = null;
 
   private static initializeOpenRouter(): void {
-    console.log("Environment variables:", {
-      OPENROUTER_API_KEY: import.meta.env.OPENROUTER_API_KEY,
-    });
+    // console.log("Environment variables:", {
+    //   OPENROUTER_API_KEY: import.meta.env.OPENROUTER_API_KEY,
+    // });
 
     if (!this.openRouterService) {
       this.openRouterService = new OpenRouterService({
@@ -121,7 +121,7 @@ ${sourceText}
         flashcards: parsedResponse.flashcards,
       };
     } catch (error) {
-      console.error("Error generating flashcards:", error);
+      //console.error("Error generating flashcards:", error);
       throw new Error(`Failed to generate flashcards: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
   }
