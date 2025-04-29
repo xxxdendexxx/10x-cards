@@ -40,7 +40,7 @@
     ```json
     {
       "data": [
-        { "id": "uuid", "front": "...", "back": "...", "source": "manual", "is_deleted": false, "created_at": "timestamp", "updated_at": "timestamp" }
+        { "id": "uuid", "front": "...", "back": "...", "source": "one of ['ai-full', 'ai-edited', 'manual']", "is_deleted": false, "created_at": "timestamp", "updated_at": "timestamp" }
       ],
       "pagination": { "page": 1, "pageSize": 10, "total": 50 }
     }
@@ -54,7 +54,7 @@
   - **Description:** Get detailed information of a single flashcard by ID (must belong to the authenticated user).
   - **Response (200):**
     ```json
-    { "id": "uuid", "front": "...", "back": "...", "source": "manual", "is_deleted": false, "created_at": "timestamp", "updated_at": "timestamp" }
+    { "id": "uuid", "front": "...", "back": "...", "source": "one of ['ai-full', 'ai-edited', 'manual']", "is_deleted": false, "created_at": "timestamp", "updated_at": "timestamp" }
     ```
   - **Errors:**
     - 401 Unauthorized
