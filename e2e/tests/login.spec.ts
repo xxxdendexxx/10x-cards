@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { LoginPage } from "../page-objects/login.page";
+//import { LoginPage } from "../page-objects/login.page";
 import { GeneratePage } from "../page-objects/generate.page";
 
 // Zwiększ timeout testów
@@ -40,12 +40,7 @@ test.describe("Login flow", () => {
       await expect(page).toHaveURL(/.*\/generate.*/);
       await expect(generatePage.title).toBeVisible({ timeout: 5000 });
       //console.log("Successfully found generate page components");
-    } catch (error) {
-      // console.log(
-      //   "Could not verify generate page - likely redirected:",
-      //   error instanceof Error ? error.message : String(error)
-      // );
-
+    } catch {
       // Take screenshot for debugging
       await page.screenshot({ path: "test-results/generate-page-debug.png" });
     }

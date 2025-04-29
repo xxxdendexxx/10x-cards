@@ -10,7 +10,7 @@ export class GenerationService {
   }
 
   private static openRouterService: OpenRouterService | null = null;
-
+  public test = 1;
   private static initializeOpenRouter(): void {
     // console.log("Environment variables:", {
     //   OPENROUTER_API_KEY: import.meta.env.OPENROUTER_API_KEY,

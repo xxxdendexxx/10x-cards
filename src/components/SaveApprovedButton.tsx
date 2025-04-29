@@ -6,7 +6,7 @@ interface SaveApprovedButtonProps {
   isLoading: boolean;
 }
 
-const SaveApprovedButton: React.FC<SaveApprovedButtonProps> = ({ onClick, isEnabled, isLoading }) => {
+const SaveApprovedButton = ({ onClick, isEnabled, isLoading }: SaveApprovedButtonProps) => {
   return (
     <div className="flex flex-col items-center py-4 border-t border-gray-200 mt-4">
       <Button onClick={onClick} disabled={!isEnabled || isLoading} size="lg" className="w-full sm:w-auto">

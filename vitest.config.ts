@@ -2,7 +2,7 @@
 import { defineConfig } from "vitest/config";
 import react from "@astrojs/react";
 import { fileURLToPath } from "node:url";
-import path from "node:path";
+//import path from "node:path";
 
 export default defineConfig({
   plugins: [react()],

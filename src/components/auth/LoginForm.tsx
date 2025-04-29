@@ -62,7 +62,7 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps = {}) {
           window.location.href = "/generate"; // Redirect on success if no callback provided
         }
       }
-    } catch (err) {
+    } catch {
       //console.error("Login error:", err);
       setError("An unexpected error occurred. Please try again.");
     } finally {

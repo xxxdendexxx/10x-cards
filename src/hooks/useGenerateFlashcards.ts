@@ -153,7 +153,7 @@ const useGenerateFlashcards = () => {
         throw new Error(`API error: ${response.status} ${response.statusText}`);
       }
 
-      const data = await response.json();
+      //const data = await response.json();
       // console.log("Flashcards saved successfully:", data);
 
       // Clear the proposals after successful save
