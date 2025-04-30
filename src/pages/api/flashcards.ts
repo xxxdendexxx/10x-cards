@@ -1,7 +1,7 @@
 // Import necessary modules
 import type { APIRoute } from "astro";
 import { z } from "zod";
-import type { CreateFlashcardCommand } from "../../types";
+import type { CreateFlashcardCommand, FlashcardUpdateDto } from "../../types";
 import { createFlashcards } from "../../lib/services/flashcards";
 import { listFlashcardsQuerySchema } from "../../lib/schemas/flashcards.schema";
 import { FlashcardsService } from "../../lib/services/flashcardsService";
@@ -32,6 +32,20 @@ const flashcardSchema = z
 const createFlashcardCommandSchema = z.object({
   flashcards: z.array(flashcardSchema),
 });
+
+// Validation schema for UUID
+const idSchema = z.string().uuid("ID must be a valid UUID");
+
+// Validation schema for flashcard update
+const flashcardUpdateSchema = z
+  .object({
+    front: z.string().max(200, "Front text must be 200 characters or less").optional(),
+    back: z.string().max(500, "Back text must be 500 characters or less").optional(),
+    source: z.enum(["ai-full", "ai-edited", "manual"] as const).optional(),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "At least one field (front, back, or source) must be provided for update",
+  });
 
 // POST endpoint for creating flashcards
 export const POST: APIRoute = async (context) => {
@@ -135,5 +149,88 @@ export const GET: APIRoute = async (context) => {
         headers: { "Content-Type": "application/json" },
       }
     );
+  }
+};
+
+// PUT endpoint handler for updating a flashcard
+export const PUT: APIRoute = async (context) => {
+  // Check authentication
+  if (!context.locals.user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // Extract id from request URL
+  const url = new URL(context.request.url);
+  const pathParts = url.pathname.split("/");
+  const idFromPath = pathParts[pathParts.length - 1];
+
+  // Validate ID parameter
+  let flashcardId: string;
+  try {
+    flashcardId = idSchema.parse(idFromPath);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return new Response(JSON.stringify({ error: error.errors }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    return new Response(JSON.stringify({ error: "Invalid flashcard ID" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // Parse and validate request body
+  let updateData: FlashcardUpdateDto;
+  try {
+    const body = await context.request.json();
+    updateData = flashcardUpdateSchema.parse(body);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return new Response(JSON.stringify({ error: error.errors }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    return new Response(JSON.stringify({ error: "Invalid request body" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // Call service to update flashcard
+  try {
+    const flashcardsService = new FlashcardsService(context);
+    const updatedFlashcard = await flashcardsService.updateFlashcard(flashcardId, updateData);
+
+    return new Response(JSON.stringify(updatedFlashcard), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    // Handle service errors
+    if (error instanceof Error) {
+      if (error.message.includes("not found")) {
+        return new Response(JSON.stringify({ error: "Flashcard not found" }), {
+          status: 404,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
+      console.error("Error updating flashcard:", error);
+      return new Response(JSON.stringify({ error: "Server error occurred" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    return new Response(JSON.stringify({ error: "Unknown error occurred" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 };
