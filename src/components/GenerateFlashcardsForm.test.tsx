@@ -265,7 +265,7 @@ describe("GenerateFlashcardsForm", () => {
     expect(screen.getByTestId("character-count")).toHaveTextContent(
       `${initialText.length} / ${MAX_TEXT_LENGTH} characters`
     );
-     // Button should be enabled if initial text is valid
+    // Button should be enabled if initial text is valid
     expect(screen.getByTestId("generate-button")).not.toBeDisabled();
   });
 

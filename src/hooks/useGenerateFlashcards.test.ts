@@ -16,7 +16,7 @@ vi.mock("sonner", () => ({
 let uuidCounter = 0;
 
 // Helper to create a mock fetch response
-const createMockFetchResponse = (body: unknown, ok: boolean = true, status: number = 200, statusText: string = 'OK') => {
+const createMockFetchResponse = (body: unknown, ok = true, status = 200, statusText = "OK") => {
   return Promise.resolve({
     ok,
     status,
@@ -29,10 +29,10 @@ describe("useGenerateFlashcards", () => {
   // Setup and teardown
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Reset counter for each test
     uuidCounter = 0;
-    
+
     // Mock crypto.randomUUID *inside* beforeEach to ensure it's fresh for each test
     vi.stubGlobal("crypto", {
       randomUUID: vi.fn().mockImplementation(() => {
@@ -97,26 +97,30 @@ describe("useGenerateFlashcards", () => {
 
     // Verify state after successful generation using waitFor
     await waitFor(() => {
-        expect(result.current.proposals.length).toBe(2);
-        // Explicitly check if the mock was called
-        expect(crypto.randomUUID).toHaveBeenCalled();
-        // Assert id separately first
-        expect(result.current.proposals[0].id).toEqual("test-uuid-1");
-        // Then check the rest of the object
-        expect(result.current.proposals[0]).toEqual(expect.objectContaining({
-            front: "Front 1",
-            back: "Back 1",
-            status: "pending",
-            source: "ai-full",
-        }));
-        // Optionally check the second proposal too
-        expect(result.current.proposals[1].id).toEqual("test-uuid-2");
-        expect(result.current.proposals[1]).toEqual(expect.objectContaining({
-            front: "Front 2",
-            back: "Back 2",
-            status: "pending",
-            source: "ai-full",
-        }));
+      expect(result.current.proposals.length).toBe(2);
+      // Explicitly check if the mock was called
+      expect(crypto.randomUUID).toHaveBeenCalled();
+      // Assert id separately first
+      expect(result.current.proposals[0].id).toEqual("test-uuid-1");
+      // Then check the rest of the object
+      expect(result.current.proposals[0]).toEqual(
+        expect.objectContaining({
+          front: "Front 1",
+          back: "Back 1",
+          status: "pending",
+          source: "ai-full",
+        })
+      );
+      // Optionally check the second proposal too
+      expect(result.current.proposals[1].id).toEqual("test-uuid-2");
+      expect(result.current.proposals[1]).toEqual(
+        expect.objectContaining({
+          front: "Front 2",
+          back: "Back 2",
+          status: "pending",
+          source: "ai-full",
+        })
+      );
     });
 
     // State checks outside waitFor if they don't depend on the async proposal update
