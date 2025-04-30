@@ -1,0 +1,19 @@
+---
+import PrivateLayout from "../layouts/PrivateLayout.astro";
+import FlashcardsListView from "../components/FlashcardsListView.tsx";
+
+// Sprawdź, czy użytkownik jest zalogowany
+// Jeśli nie, przekieruj do strony logowania
+if (!Astro.locals.user) {
+  return Astro.redirect("/auth/login");
+}
+
+export const prerender = false;
+---
+
+<PrivateLayout title="Twoje fiszki">
+  <div class="container">
+    <h1 class="text-3xl font-bold mb-6">Twoje fiszki</h1>
+    <FlashcardsListView client:load />
+  </div>
+</PrivateLayout>

@@ -1,156 +1,141 @@
-import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { useEffect, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import PropTypes from "prop-types";
+import type { FlashcardDTO, FlashcardUpdateDto } from "../types";
 
-// Import the view model interface
-interface FlashcardProposalViewModel {
-  id: string;
-  front: string;
-  back: string;
-  originalFront: string;
-  originalBack: string;
-  status: "pending" | "accepted" | "rejected" | "edited";
-  source: "ai-full" | "ai-edited";
-}
+// Schema walidacji formularza
+const flashcardFormSchema = z.object({
+  front: z.string().min(1, "Przód fiszki jest wymagany").max(1000, "Przód fiszki może mieć maksymalnie 1000 znaków"),
+  back: z.string().min(1, "Tył fiszki jest wymagany").max(1000, "Tył fiszki może mieć maksymalnie 1000 znaków"),
+});
+
+type FormValues = z.infer<typeof flashcardFormSchema>;
 
 interface EditFlashcardModalProps {
-  proposal: FlashcardProposalViewModel | null;
   isOpen: boolean;
-  onSave: (updatedProposal: FlashcardProposalViewModel) => void;
-  onClose: () => void;
+  flashcard: FlashcardDTO | null;
+  onSave: (id: string, data: FlashcardUpdateDto) => Promise<void>;
+  onCancel: () => void;
+  isLoading: boolean;
 }
 
-const MAX_FRONT_LENGTH = 200;
-const MAX_BACK_LENGTH = 500;
+const EditFlashcardModal = ({ isOpen, flashcard, onSave, onCancel, isLoading }: EditFlashcardModalProps) => {
+  const [error, setError] = useState<string | null>(null);
 
-const EditFlashcardModal: React.FC<EditFlashcardModalProps> = ({ proposal, isOpen, onSave, onClose }) => {
-  const [front, setFront] = useState("");
-  const [back, setBack] = useState("");
-  const [frontError, setFrontError] = useState<string | null>(null);
-  const [backError, setBackError] = useState<string | null>(null);
+  console.log("Modal render:", { isOpen, flashcard }); // Debugging
 
-  // Initialize form when proposal changes
+  // Inicjalizacja formularza
+  const form = useForm<FormValues>({
+    resolver: zodResolver(flashcardFormSchema),
+    defaultValues: {
+      front: flashcard?.front || "",
+      back: flashcard?.back || "",
+    },
+  });
+
+  // Aktualizacja wartości formularza gdy zmienia się flashcard
   useEffect(() => {
-    if (proposal) {
-      setFront(proposal.front);
-      setBack(proposal.back);
+    console.log("Flashcard effect triggered:", flashcard); // Debugging
+    if (flashcard) {
+      form.reset({
+        front: flashcard.front,
+        back: flashcard.back,
+      });
     }
-  }, [proposal]);
+  }, [flashcard, form]);
 
-  // Validate front content
-  useEffect(() => {
-    if (front.length > MAX_FRONT_LENGTH) {
-      setFrontError(`Front text must not exceed ${MAX_FRONT_LENGTH} characters (currently ${front.length})`);
-    } else {
-      setFrontError(null);
+  // Obsługa zapisu
+  const handleSubmit = form.handleSubmit(async (data: FormValues) => {
+    if (!flashcard) return;
+
+    setError(null);
+    try {
+      await onSave(flashcard.id, data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Wystąpił błąd podczas zapisywania fiszki");
     }
-  }, [front]);
+  });
 
-  // Validate back content
-  useEffect(() => {
-    if (back.length > MAX_BACK_LENGTH) {
-      setBackError(`Back text must not exceed ${MAX_BACK_LENGTH} characters (currently ${back.length})`);
-    } else {
-      setBackError(null);
+  const handleOpenChange = (open: boolean) => {
+    console.log("Dialog open change:", open); // Debugging
+    if (!open) {
+      onCancel();
     }
-  }, [back]);
-
-  const handleSave = () => {
-    if (!proposal || frontError || backError) return;
-
-    const updatedProposal: FlashcardProposalViewModel = {
-      ...proposal,
-      front,
-      back,
-    };
-
-    onSave(updatedProposal);
   };
 
-  // Don't render if no proposal is selected
-  if (!proposal) return null;
-
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[600px]">
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Edit Flashcard</DialogTitle>
+          <DialogTitle>Edytuj fiszkę</DialogTitle>
+          <DialogDescription>Zaktualizuj treść przodu i tyłu fiszki. Kliknij zapisz, gdy skończysz.</DialogDescription>
         </DialogHeader>
 
-        <div className="py-4 space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="front" className="flex justify-between">
-              <span>
-                Front <span className="text-gray-500">(max {MAX_FRONT_LENGTH} characters)</span>
-              </span>
-              <span className={front.length > MAX_FRONT_LENGTH ? "text-red-500" : "text-gray-500"}>
-                {front.length}/{MAX_FRONT_LENGTH}
-              </span>
-            </Label>
-            <Input
-              id="front"
-              value={front}
-              onChange={(e) => setFront(e.target.value)}
-              className={frontError ? "border-red-500" : ""}
+        <Form {...form}>
+          <form onSubmit={handleSubmit} className="space-y-6 py-4">
+            <FormField
+              control={form.control}
+              name="front"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Przód</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Wpisz treść przodu fiszki..."
+                      className="resize-none min-h-[100px]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {frontError && <p className="text-sm text-red-500">{frontError}</p>}
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="back" className="flex justify-between">
-              <span>
-                Back <span className="text-gray-500">(max {MAX_BACK_LENGTH} characters)</span>
-              </span>
-              <span className={back.length > MAX_BACK_LENGTH ? "text-red-500" : "text-gray-500"}>
-                {back.length}/{MAX_BACK_LENGTH}
-              </span>
-            </Label>
-            <Textarea
-              id="back"
-              value={back}
-              onChange={(e) => setBack(e.target.value)}
-              className={`min-h-[150px] ${backError ? "border-red-500" : ""}`}
+            <FormField
+              control={form.control}
+              name="back"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tył</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Wpisz treść tyłu fiszki..."
+                      className="resize-none min-h-[100px]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {backError && <p className="text-sm text-red-500">{backError}</p>}
-          </div>
 
-          {(proposal.originalFront !== front || proposal.originalBack !== back) && (
-            <div className="bg-blue-50 border border-blue-100 rounded-md p-3 text-sm text-blue-800">
-              <p>This flashcard has been edited from its original AI-generated content.</p>
-            </div>
-          )}
-        </div>
+            {error && <div className="p-3 text-sm bg-red-50 border border-red-200 rounded text-red-700">{error}</div>}
 
-        <DialogFooter className="flex gap-2 sm:justify-between">
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave} disabled={!front.trim() || !back.trim() || !!frontError || !!backError}>
-            Save Changes
-          </Button>
-        </DialogFooter>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
+                Anuluj
+              </Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Zapisywanie..." : "Zapisz zmiany"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
-};
-
-EditFlashcardModal.propTypes = {
-  proposal: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    front: PropTypes.string.isRequired,
-    back: PropTypes.string.isRequired,
-    originalFront: PropTypes.string.isRequired,
-    originalBack: PropTypes.string.isRequired,
-    status: PropTypes.oneOf(["pending", "accepted", "rejected", "edited"]).isRequired,
-    source: PropTypes.oneOf(["ai-full", "ai-edited"]).isRequired,
-  }),
-  isOpen: PropTypes.bool.isRequired,
-  onSave: PropTypes.func.isRequired,
-  onClose: PropTypes.func.isRequired,
 };
 
 export default EditFlashcardModal;
