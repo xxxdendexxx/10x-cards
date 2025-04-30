@@ -33,16 +33,28 @@
   - **Description:** Retrieve a paginated list of flashcards for the authenticated user.
   - **Query Parameters:**
     - page (optional): Page number
-    - pageSize (optional): Number of items per page
+    - pageSize (optional): Number of items per page (default: 10, max: 100)
     - sortBy (optional): Field to sort by (e.g., created_at)
     - filter (optional): Filter by fields such as source
   - **Response (200):**
     ```json
     {
       "data": [
-        { "id": "uuid", "front": "...", "back": "...", "source": "one of ['ai-full', 'ai-edited', 'manual']", "is_deleted": false, "created_at": "timestamp", "updated_at": "timestamp" }
+        { 
+          "id": "uuid", 
+          "front": "...", 
+          "back": "...", 
+          "source": "one of ['ai-full', 'ai-edited', 'manual']",
+          "generation_id": "number | null",
+          "created_at": "timestamp", 
+          "updated_at": "timestamp" 
+        }
       ],
-      "pagination": { "page": 1, "pageSize": 10, "total": 50 }
+      "pagination": { 
+        "page": 1, 
+        "pageSize": 10, 
+        "total": 50 
+      }
     }
     ```
   - **Errors:**
@@ -216,6 +228,10 @@
     - 'front' is limited to 200 characters
     - 'back' is limited to 500 characters
     - 'source' must be one of ["ai-full", "ai-edited", "manual"]
+    - 'generation_id' is required for ai-full and ai-edited sources, must be null for manual
+  - Pagination parameters:
+    - 'pageSize' must be between 1 and 100
+    - 'page' must be ≥ 1
   - AI Generation Input: Validate that the provided source text meets expected length criteria (typically between 1000 and 10000 characters) as enforced in the generations table.
 - **Business Logic:**
   - **AI Flashcard Generation:** The process involves accepting a raw text, generating flashcard proposals via an AI service, returning them to the client for review, and then confirming and persisting acceptable proposals. A generation log is recorded to track usage statistics.

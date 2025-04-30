@@ -65,7 +65,7 @@ Ten punkt końcowy umożliwia uwierzytelnionemu użytkownikowi pobranie stronico
   ```ts
   export interface PaginationDTO {
     page: number;
-    limit: number;
+    pageSize: number;
     total: number;
   }
   ```

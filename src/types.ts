@@ -28,7 +28,7 @@ export type FlashcardDTO = Pick<
 //
 export interface PaginationDTO {
   page: number;
-  limit: number;
+  pageSize: number;
   total: number;
 }
 
