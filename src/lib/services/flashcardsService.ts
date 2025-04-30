@@ -105,4 +105,54 @@ export class FlashcardsService {
 
     return data as FlashcardDTO;
   }
+
+  /**
+   * Soft deletes a flashcard by setting is_deleted=true
+   * @param flashcardId - UUID of the flashcard to delete
+   * @returns An object indicating the result of the operation
+   */
+  async softDeleteFlashcard(
+    flashcardId: string
+  ): Promise<{ success: boolean; error?: "not_found" | "unauthorized" | "db_error" }> {
+    const userId = this.getUserId();
+
+    try {
+      // First check if the flashcard exists and belongs to the user
+      const { data: flashcard, error: findError } = await this.supabase
+        .from("flashcards")
+        .select("id, user_id")
+        .eq("id", flashcardId)
+        .eq("is_deleted", false)
+        .single();
+
+      if (findError) {
+        return { success: false, error: "not_found" };
+      }
+
+      if (!flashcard) {
+        return { success: false, error: "not_found" };
+      }
+
+      if (flashcard.user_id !== userId) {
+        return { success: false, error: "unauthorized" };
+      }
+
+      // Perform the soft delete operation
+      const { error: updateError } = await this.supabase
+        .from("flashcards")
+        .update({
+          is_deleted: true,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", flashcardId);
+
+      if (updateError) {
+        return { success: false, error: "db_error" };
+      }
+
+      return { success: true };
+    } catch {
+      return { success: false, error: "db_error" };
+    }
+  }
 }
