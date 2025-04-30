@@ -96,24 +96,29 @@ const useGenerateFlashcards = () => {
 
   const handleAccept = useCallback((id: string) => {
     setProposals((prev) => prev.map((p) => (p.id === id ? { ...p, status: "accepted" } : p)));
-  }, []);
+  }, [setProposals]);
 
   const handleReject = useCallback((id: string) => {
     setProposals((prev) => prev.map((p) => (p.id === id ? { ...p, status: "rejected" } : p)));
-  }, []);
+  }, [setProposals]);
 
   const handleEditClick = useCallback((proposal: FlashcardProposalViewModel) => {
     setEditingProposal(proposal);
     setIsModalOpen(true);
   }, []);
 
-  const handleModalSave = useCallback((updatedProposal: FlashcardProposalViewModel) => {
-    setProposals((prev) =>
-      prev.map((p) => (p.id === updatedProposal.id ? { ...updatedProposal, status: "edited", source: "ai-edited" } : p))
-    );
-    setIsModalOpen(false);
-    setEditingProposal(null);
-  }, []);
+  const handleModalSave = useCallback(
+    (updatedProposal: FlashcardProposalViewModel) => {
+      setProposals((prev) =>
+        prev.map((p) =>
+          p.id === updatedProposal.id ? { ...updatedProposal, status: "edited", source: "ai-edited" } : p
+        )
+      );
+      setIsModalOpen(false);
+      setEditingProposal(null);
+    },
+    [setProposals]
+  );
 
   const handleModalClose = useCallback(() => {
     setIsModalOpen(false);
