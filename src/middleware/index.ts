@@ -1,5 +1,5 @@
 import { defineMiddleware } from "astro:middleware";
-import { createSupabaseServerInstance } from "../db/supabase.client";
+import { createClient } from "../db/supabase.client";
 
 // Define public paths that don't require authentication
 const PUBLIC_PATHS = [
@@ -15,16 +15,14 @@ const PUBLIC_PATHS = [
 ];
 
 export const onRequest = defineMiddleware(async (context, next) => {
+  // Create a Supabase client for this request
+  const supabase = createClient(context.cookies);
+  context.locals.supabase = supabase;
+
   // Skip auth check for public paths
   if (PUBLIC_PATHS.includes(context.url.pathname)) {
     return next();
   }
-
-  // Create a Supabase instance specific to this request
-  const supabase = createSupabaseServerInstance({
-    cookies: context.cookies,
-    headers: context.request.headers, // Use context.request.headers
-  });
 
   // IMPORTANT: Always get user session first before any other operations
   const {
@@ -39,23 +37,14 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   if (user) {
-    // Store minimal user info on locals if needed by protected pages
     context.locals.user = {
-      id: user.id,
       email: user.email,
-      // Add any other necessary fields, but keep it minimal
+      id: user.id,
     };
-  } else {
-    // If no user and the path is not public, redirect to login
-    // Ensure API routes don't get redirected to HTML pages
-    if (!context.url.pathname.startsWith("/api/")) {
-      return context.redirect("/auth/login");
-    }
-    // For API routes, you might want to return a 401 Unauthorized instead
-    // Or handle it within the API route itself
-    // return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+  } else if (!PUBLIC_PATHS.includes(context.url.pathname)) {
+    // Redirect to login for protected routes
+    return context.redirect("/auth/login");
   }
 
-  // Proceed to the next middleware or the page
   return next();
 });

@@ -71,23 +71,26 @@ Ten punkt końcowy umożliwia uwierzytelnionemu użytkownikowi pobranie stronico
   ```
 
 ## 4. Przepływ danych
-- **POPRAWKA:** zamiast manualnej inicjalizacji klienta Supabase opisuję wykorzystanie `createSupabaseServerInstance()` z pliku `src/db/supabase.client.ts`:
 1. **Middleware** (`src/middleware/index.ts`):
    ```ts
-   import { createSupabaseServerInstance } from "../db/supabase.client";
+   import { createClient } from "../db/supabase.client";
 
    export async function onRequest({ request, cookies, locals }) {
-     // Inicjalizacja klienta Supabase przez helper
-     const supabase = createSupabaseServerInstance({ headers: request.headers, cookies });
+     // Inicjalizacja klienta Supabase z użyciem Astro Cookies API
+     const supabase = createClient(cookies);
      locals.supabase = supabase;
 
      // Pobranie uwierzytelnionego użytkownika
-     const { data: { user } } = await supabase.auth.getUser();
+     const { data: { user }, error } = await supabase.auth.getUser();
+     if (error || !user) {
+       return new Response("Unauthorized", { status: 401 });
+     }
      locals.user = user;
    }
    ```
-   - Użyj `createSupabaseServerInstance({ headers, cookies })` do stworzenia `SupabaseClient` i przypisania go do `locals.supabase`.
+   - Użyj `createClient(cookies)` do stworzenia `SupabaseClient` z poprawną obsługą ciasteczek Astro.
    - Pobierz bieżącego użytkownika przez `supabase.auth.getUser()` i zapisz w `locals.user`.
+   - W przypadku braku użytkownika lub błędu, zwróć odpowiedź 401.
 
 2. **Handler GET** w `src/pages/api/flashcards.ts`:
    - Parsuje `request.url.searchParams`

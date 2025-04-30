@@ -1,10 +1,9 @@
 import type { APIRoute } from "astro";
-import { createSupabaseServerInstance } from "../../../db/supabase.client"; // Adjust path if necessary
 
 // Ensure this API route is server-rendered
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request, cookies }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   let email: string | undefined;
   let password: string | undefined;
 
@@ -29,10 +28,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     });
   }
 
-  const supabase = createSupabaseServerInstance({ cookies, headers: request.headers });
-
-  // Only destructure error, as data is not used here
-  const { error } = await supabase.auth.signInWithPassword({
+  const { error } = await locals.supabase.auth.signInWithPassword({
     email,
     password,
   });

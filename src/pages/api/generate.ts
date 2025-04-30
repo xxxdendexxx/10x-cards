@@ -2,7 +2,6 @@ import type { APIRoute } from "astro";
 import { z } from "zod";
 import type { GenerateFlashcardProposalsCommand } from "../../types";
 import { GenerationService } from "../../lib/services/generation.service";
-import { createSupabaseServerInstance } from "../../db/supabase.client";
 
 // Schema for validating the request body
 const generateFlashcardProposalsSchema = z.object({
@@ -20,8 +19,6 @@ export const POST: APIRoute = async (context) => {
       headers: { "Content-Type": "application/json" },
     });
   }
-
-  const userId = context.locals.user.id;
 
   try {
     // 1. Parse and validate input data
@@ -43,11 +40,9 @@ export const POST: APIRoute = async (context) => {
 
     const { sourceText } = validationResult.data;
 
-    // Create Supabase client instance
-    const supabase = createSupabaseServerInstance({ cookies: context.cookies, headers: context.request.headers });
-
-    // 2. Generate flashcards using GenerationService, passing userId and supabase
-    const response = await GenerationService.generateFlashcards(sourceText, userId, supabase);
+    // 2. Instantiate GenerationService and generate flashcards
+    const generationService = new GenerationService(context); // Pass the whole context
+    const response = await generationService.generateFlashcards(sourceText);
 
     return new Response(JSON.stringify(response), {
       status: 200,

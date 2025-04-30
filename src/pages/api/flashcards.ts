@@ -3,7 +3,6 @@ import type { APIRoute } from "astro";
 import { z } from "zod";
 import type { CreateFlashcardCommand } from "../../types";
 import { createFlashcards } from "../../lib/services/flashcards";
-import { createSupabaseServerInstance } from "../../db/supabase.client";
 import { listFlashcardsQuerySchema } from "../../lib/schemas/flashcards.schema";
 import { FlashcardsService } from "../../lib/services/flashcardsService";
 
@@ -44,8 +43,6 @@ export const POST: APIRoute = async (context) => {
     });
   }
 
-  const userId = context.locals.user.id;
-
   try {
     // Step 2: Parse and validate request body
     const body = await context.request.json();
@@ -60,11 +57,8 @@ export const POST: APIRoute = async (context) => {
       });
     }
 
-    // Create Supabase client instance
-    const supabase = createSupabaseServerInstance({ cookies: context.cookies, headers: context.request.headers });
-
-    // Step 3: Process creation of flashcards, passing supabase instance and userId
-    const createdFlashcards = await createFlashcards(parsedData, userId, supabase);
+    // Step 3: Process creation of flashcards, passing the context
+    const createdFlashcards = await createFlashcards(parsedData, context);
 
     // Respond with the created flashcards
     return new Response(JSON.stringify({ flashcards: createdFlashcards }), {
@@ -83,10 +77,10 @@ export const POST: APIRoute = async (context) => {
 
 export const prerender = false;
 
-export const GET: APIRoute = async ({ request, locals }) => {
+export const GET: APIRoute = async (context) => {
   try {
     // Check authentication
-    if (!locals.user) {
+    if (!context.locals.user) {
       console.warn("Unauthorized access attempt to /api/flashcards");
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
@@ -95,12 +89,12 @@ export const GET: APIRoute = async ({ request, locals }) => {
     }
 
     // Parse and validate query parameters
-    const url = new URL(request.url);
+    const url = new URL(context.request.url);
     const queryResult = listFlashcardsQuerySchema.safeParse(Object.fromEntries(url.searchParams));
 
     if (!queryResult.success) {
       console.warn("Invalid query parameters for /api/flashcards:", {
-        userId: locals.user.id,
+        userId: context.locals.user.id,
         errors: queryResult.error.errors,
         params: Object.fromEntries(url.searchParams),
       });
@@ -116,9 +110,9 @@ export const GET: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    // Initialize service and fetch flashcards
-    const flashcardsService = new FlashcardsService(locals.supabase);
-    const response = await flashcardsService.listFlashcards(locals.user.id, queryResult.data);
+    // Initialize service with context and fetch flashcards
+    const flashcardsService = new FlashcardsService(context);
+    const response = await flashcardsService.listFlashcards(queryResult.data);
 
     return new Response(JSON.stringify(response), {
       status: 200,
@@ -127,7 +121,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error("Error in GET /api/flashcards:", {
-      userId: locals.user?.id,
+      userId: context.locals.user?.id,
       error: errorMessage,
       stack: error instanceof Error ? error.stack : undefined,
     });
