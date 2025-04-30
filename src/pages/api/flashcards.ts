@@ -4,6 +4,8 @@ import { z } from "zod";
 import type { CreateFlashcardCommand } from "../../types";
 import { createFlashcards } from "../../lib/services/flashcards";
 import { createSupabaseServerInstance } from "../../db/supabase.client";
+import { listFlashcardsQuerySchema } from "../../lib/schemas/flashcards.schema";
+import { FlashcardsService } from "../../lib/services/flashcardsService";
 
 // Define flashcard schema with validation rules
 const flashcardSchema = z
@@ -76,5 +78,68 @@ export const POST: APIRoute = async (context) => {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
+  }
+};
+
+export const prerender = false;
+
+export const GET: APIRoute = async ({ request, locals }) => {
+  try {
+    // Check authentication
+    if (!locals.user) {
+      console.warn("Unauthorized access attempt to /api/flashcards");
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Parse and validate query parameters
+    const url = new URL(request.url);
+    const queryResult = listFlashcardsQuerySchema.safeParse(Object.fromEntries(url.searchParams));
+
+    if (!queryResult.success) {
+      console.warn("Invalid query parameters for /api/flashcards:", {
+        userId: locals.user.id,
+        errors: queryResult.error.errors,
+        params: Object.fromEntries(url.searchParams),
+      });
+      return new Response(
+        JSON.stringify({
+          error: "Invalid query parameters",
+          details: queryResult.error.errors,
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Initialize service and fetch flashcards
+    const flashcardsService = new FlashcardsService(locals.supabase);
+    const response = await flashcardsService.listFlashcards(locals.user.id, queryResult.data);
+
+    return new Response(JSON.stringify(response), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Error in GET /api/flashcards:", {
+      userId: locals.user?.id,
+      error: errorMessage,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    return new Response(
+      JSON.stringify({
+        error: "Internal server error",
+        message: "Failed to fetch flashcards. Please try again later.",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 };
