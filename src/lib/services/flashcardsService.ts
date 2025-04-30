@@ -1,7 +1,7 @@
 import type { APIContext } from "astro";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../db/database.types";
-import type { FlashcardsListResponseDTO, FlashcardDTO } from "../../types";
+import type { FlashcardsListResponseDTO, FlashcardDTO, FlashcardUpdateDto } from "../../types";
 
 interface ListFlashcardsParams {
   page: number;
@@ -73,5 +73,36 @@ export class FlashcardsService {
         total: count || 0,
       },
     };
+  }
+
+  /**
+   * Updates a flashcard with the specified changes
+   * @param flashcardId - UUID of the flashcard to update
+   * @param updateData - Object containing fields to update (front, back, source)
+   * @returns The updated flashcard
+   * @throws Error if the flashcard is not found or cannot be updated
+   */
+  async updateFlashcard(flashcardId: string, updateData: FlashcardUpdateDto): Promise<FlashcardDTO> {
+    const userId = this.getUserId();
+
+    // Perform the update operation
+    const { data, error } = await this.supabase
+      .from("flashcards")
+      .update(updateData)
+      .eq("id", flashcardId)
+      .eq("user_id", userId)
+      .eq("is_deleted", false)
+      .select("id, front, back, source, generation_id, created_at, updated_at")
+      .single();
+
+    if (error) {
+      throw new Error(`Failed to update flashcard: ${error.message}`);
+    }
+
+    if (!data) {
+      throw new Error("Flashcard not found");
+    }
+
+    return data as FlashcardDTO;
   }
 }

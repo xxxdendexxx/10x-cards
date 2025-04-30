@@ -66,7 +66,7 @@
   - **Description:** Get detailed information of a single flashcard by ID (must belong to the authenticated user).
   - **Response (200):**
     ```json
-    { "id": "uuid", "front": "...", "back": "...", "source": "one of ['ai-full', 'ai-edited', 'manual']", "is_deleted": false, "created_at": "timestamp", "updated_at": "timestamp" }
+    { "id": "uuid", "front": "...", "back": "...", "source": "one of ['ai-full', 'ai-edited', 'manual']", "generation_id": null, "created_at": "timestamp", "updated_at": "timestamp" }
     ```
   - **Errors:**
     - 401 Unauthorized
@@ -125,7 +125,8 @@
   - **Validations**:
     - `front` maximum length: 200 characters.
     - `back` maximum length: 500 characters.
-    - `source`: Must be one of `ai-edited` or `manual`.
+    - `source`: Must be one of `ai-full`, `ai-edited`, or `manual`.
+    - `generation_id`: Cannot be updated through this endpoint.
 
 - **Delete Flashcard**
   - **Method:** DELETE
