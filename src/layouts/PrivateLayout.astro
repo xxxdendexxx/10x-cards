@@ -1,6 +1,7 @@
 ---
 import Layout from "./Layout.astro";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 // TODO: Add middleware logic check here or in middleware file
 // import { Astro } from 'astro';
@@ -16,15 +17,43 @@ interface Props {
 }
 
 const { title } = Astro.props;
+
+// Get current pathname for active link styling
+const pathname = Astro.url.pathname;
 ---
 
 <Layout title={title}>
   <header class="bg-background border-b sticky top-0 z-50 w-full">
-    <nav class="flex items-center justify-end h-14 w-full px-4 md:px-6 gap-4">
-      {user && <span class="text-sm text-muted-foreground">{user.email}</span>}
-      <form action="/api/auth/logout" method="post">
-        <Button variant="outline" size="sm" type="submit">Logout</Button>
-      </form>
+    <nav class="flex items-center justify-between h-14 w-full px-4 md:px-6">
+      <!-- Left side navigation -->
+      <div class="flex items-center gap-6">
+        <a
+          href="/generate"
+          class={cn(
+            "text-sm font-medium transition-colors hover:text-primary",
+            pathname === "/generate" ? "text-primary" : "text-muted-foreground"
+          )}
+        >
+          Generuj fiszki z AI
+        </a>
+        <a
+          href="/flashcards"
+          class={cn(
+            "text-sm font-medium transition-colors hover:text-primary",
+            pathname === "/flashcards" ? "text-primary" : "text-muted-foreground"
+          )}
+        >
+          Twoje fiszki
+        </a>
+      </div>
+
+      <!-- Right side user info and logout -->
+      <div class="flex items-center gap-4">
+        {user && <span class="text-sm text-muted-foreground">{user.email}</span>}
+        <form action="/api/auth/logout" method="post">
+          <Button variant="outline" size="sm" type="submit">Wyloguj</Button>
+        </form>
+      </div>
     </nav>
   </header>
   <main class="p-4">
