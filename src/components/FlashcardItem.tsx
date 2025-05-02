@@ -1,6 +1,7 @@
 import { type FlashcardDTO } from "../types";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { PencilIcon, TrashIcon } from "lucide-react";
 
 interface FlashcardItemProps {
@@ -21,6 +22,33 @@ const FlashcardItem = ({ flashcard, onEdit, onDelete }: FlashcardItemProps) => {
     onDelete(flashcard.id);
   };
 
+  // Funkcja zwracająca odpowiedni wariant badge dla źródła fiszki
+  const getSourceBadgeVariant = (source: string) => {
+    switch (source) {
+      case "ai-full":
+        return "secondary";
+      case "ai-edited":
+        return "outline";
+      case "manual":
+      default:
+        return "default";
+    }
+  };
+
+  // Funkcja zwracająca czytelną nazwę źródła
+  const getSourceLabel = (source: string) => {
+    switch (source) {
+      case "ai-full":
+        return "AI";
+      case "ai-edited":
+        return "AI (edytowane)";
+      case "manual":
+        return "Ręcznie";
+      default:
+        return source;
+    }
+  };
+
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="pb-2">
@@ -37,7 +65,10 @@ const FlashcardItem = ({ flashcard, onEdit, onDelete }: FlashcardItemProps) => {
       </CardContent>
 
       <CardFooter className="pt-2 flex justify-between border-t">
-        <div className="text-xs text-gray-500">{new Date(flashcard.updated_at).toLocaleDateString()}</div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-gray-500">{new Date(flashcard.updated_at).toLocaleDateString()}</span>
+          <Badge variant={getSourceBadgeVariant(flashcard.source)}>{getSourceLabel(flashcard.source)}</Badge>
+        </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={handleEdit}>
             <PencilIcon className="h-4 w-4 mr-1" />
