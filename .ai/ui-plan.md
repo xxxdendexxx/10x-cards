@@ -56,10 +56,11 @@ Architektura interfejsu użytkownika opiera się na modularnej strukturze z wyra
 
 ### Widok listy fiszek
 - **Ścieżka widoku:** `/flashcards`
-- **Główny cel:** Umożliwić użytkownikowi przegląd, edycję oraz usuwanie zapisanych fiszek.
+- **Główny cel:** Umożliwić użytkownikowi przegląd, edycję, usuwanie **oraz ręczne dodawanie** zapisanych fiszek.
 - **Kluczowe informacje do wyświetlenia:** 
   - Lista wszystkich fiszek użytkownika (sortowanie według daty generacji)
 - **Kluczowe komponenty widoku:** 
+  - **Przycisk "Dodaj fiszkę"**
   - Lista kart fiszek z przyciskami akcji (edycja, usunięcie)
   - Modal do edycji wybranej fiszki z walidacją inline
   - Mechanizm paginacji
@@ -113,6 +114,7 @@ Architektura interfejsu użytkownika opiera się na modularnej strukturze z wyra
 
 4. **Zarządzanie zapisanymi fiszkami:**
    - Po zatwierdzeniu fiszek użytkownik przechodzi do widoku listy fiszek (`/flashcards`), gdzie może przeglądać, edytować lub usuwać fiszki.
+   - **Użytkownik może również ręcznie dodać nową fiszkę, klikając przycisk "Dodaj fiszkę", co otworzy modal/formularz do wprowadzenia danych.**
    - Paginacja ułatwia przeglądanie dużych zbiorów fiszek.
 
 5. **Zarządzanie kontem:**
@@ -138,5 +140,6 @@ Architektura interfejsu użytkownika opiera się na modularnej strukturze z wyra
 - **Formularze:** Wykorzystywane w widokach logowania, generowania fiszek oraz zarządzania kontem, z walidacją inline i obsługą błędów.
 - **Lista fiszek:** Komponent do wyświetlania zestawu fiszek z funkcjami edycji, usuwania oraz paginacji.
 - **Modal edycji:** Dynamiczny interfejs do modyfikacji treści pojedynczych fiszek z natychmiastową walidacją.
+- **Modal/Formularz dodawania fiszki:** Interfejs do ręcznego tworzenia nowej fiszki (przód, tył) z walidacją.
 - **Komponenty statystyk:** Wizualizacja danych (np. liczba wygenerowanych i zaakceptowanych fiszek) na dashboardzie.
 - **Alerty i komunikaty błędów:** System wyświetlania komunikatów informujących o błędach lub potwierdzających wykonanie akcji w sposób jasny i dostępny.
