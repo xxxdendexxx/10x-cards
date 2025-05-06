@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { createClient } from "../../../db/supabase.client";
+// import { createClient } from "../../../db/supabase.client"; // Usunięty import
 import { z } from "zod";
 
 // Schemat walidacji danych wejściowych
@@ -14,7 +14,8 @@ const registerSchema = z
     path: ["confirmPassword"],
   });
 
-export const POST: APIRoute = async ({ request, cookies }) => {
+export const POST: APIRoute = async (context) => {
+  const { request, locals } = context; // Usunięto cookies z destrukturyzacji
   try {
     const data = await request.json();
 
@@ -33,8 +34,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
     const { email, password } = result.data;
 
-    // Inicjalizacja klienta Supabase
-    const supabase = createClient(cookies);
+    // Inicjalizacja klienta Supabase poprzez context.locals
+    const supabase = locals.supabase;
 
     // Rejestracja użytkownika
     const { data: authData, error } = await supabase.auth.signUp({
