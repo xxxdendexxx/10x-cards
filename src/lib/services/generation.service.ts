@@ -17,7 +17,13 @@ export class GenerationService {
       throw new Error("User not found in context.locals");
     }
     this.context = context;
-    GenerationService.initializeOpenRouter();
+    const openRouterApiKey = this.context.locals.runtime?.env?.OPENROUTER_API_KEY || import.meta.env.OPENROUTER_API_KEY;
+    if (!openRouterApiKey) {
+      console.warn(
+        "OPENROUTER_API_KEY is not defined. Checked Cloudflare env and local .env. OpenRouterService might not work."
+      );
+    }
+    GenerationService.initializeOpenRouter(openRouterApiKey || "");
   }
 
   private get supabase(): SupabaseClient<Database> {
@@ -38,10 +44,10 @@ export class GenerationService {
     return crypto.createHash("md5").update(text).digest("hex");
   }
 
-  private static initializeOpenRouter(): void {
+  private static initializeOpenRouter(apiKey: string): void {
     if (!this.openRouterService) {
       this.openRouterService = new OpenRouterService({
-        apiKey: import.meta.env.OPENROUTER_API_KEY || "",
+        apiKey: apiKey,
         endpoint: "https://openrouter.ai/api/v1/chat/completions",
         systemMessage:
           "You are an AI tutor that creates flashcards from provided text. Your task is to extract key concepts and create question-answer pairs that will help in learning the material. Each flashcard should be concise and focus on a single concept.",
