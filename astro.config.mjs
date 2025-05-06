@@ -1,6 +1,5 @@
 // @ts-check
 import { defineConfig } from "astro/config";
-import node from "@astrojs/node";
 
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
@@ -18,6 +17,15 @@ export default defineConfig({
   integrations: [react(), sitemap()],
   server: { port: 3000 },
   vite: {
+    resolve: {
+      // Użyj react-dom/server.edge zamiast react-dom/server.browser dla React 19.
+      // Bez tego MessageChannel z node:worker_threads musi być polyfillowany.
+      alias: import.meta.env.PROD
+        ? {
+            "react-dom/server": "react-dom/server.edge",
+          }
+        : undefined,
+    },
     plugins: [tailwindcss()],
   },
 });
