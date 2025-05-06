@@ -4,9 +4,9 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AstroCookies } from "astro";
 
 // Ensure environment variables are loaded
-if (!import.meta.env.SUPABASE_URL || !import.meta.env.SUPABASE_KEY) {
-  throw new Error("Supabase URL and Key must be provided in environment variables.");
-}
+// if (!import.meta.env.SUPABASE_URL || !import.meta.env.SUPABASE_KEY) {
+// throw new Error("Supabase URL and Key must be provided in environment variables.");
+// }
 
 export const cookieOptionsConfig: CookieOptionsWithName = {
   name: "sb-auth-token",
@@ -23,8 +23,15 @@ export interface CookieHandler {
 }
 
 // Create a Supabase client for the current request, using AstroCookies type
-export function createClient(cookies: AstroCookies): SupabaseClient<Database> {
-  return createServerClient<Database>(import.meta.env.SUPABASE_URL, import.meta.env.SUPABASE_KEY, {
+export function createSupabaseClient(
+  supabaseUrl: string,
+  supabaseKey: string,
+  cookies: AstroCookies
+): SupabaseClient<Database> {
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error("Supabase URL and Key must be provided to createSupabaseClient.");
+  }
+  return createServerClient<Database>(supabaseUrl, supabaseKey, {
     auth: {
       autoRefreshToken: true,
       persistSession: true,
@@ -45,33 +52,39 @@ export function createClient(cookies: AstroCookies): SupabaseClient<Database> {
 }
 
 // Export a default Supabase client instance for direct use
-export const supabase = createServerClient<Database>(import.meta.env.SUPABASE_URL, import.meta.env.SUPABASE_KEY, {
-  cookieOptions: cookieOptionsConfig,
-  cookies: {
-    get(name: string) {
-      // Try to get cookie from document if available
-      if (typeof document !== "undefined") {
-        const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
-        return match ? match[2] : undefined;
-      }
-      return undefined;
-    },
-    set(name: string, value: string, options: CookieOptionsWithName) {
-      if (typeof document !== "undefined") {
-        let cookieString = `${name}=${value}`;
-        if (options.path) cookieString += `; path=${options.path}`;
-        if (options.maxAge) cookieString += `; max-age=${options.maxAge}`;
-        if (options.domain) cookieString += `; domain=${options.domain}`;
-        if (options.secure) cookieString += "; secure";
-        if (options.httpOnly) cookieString += "; httpOnly";
-        if (options.sameSite) cookieString += `; samesite=${options.sameSite}`;
-        document.cookie = cookieString;
-      }
-    },
-    remove(name: string, options: CookieOptionsWithName) {
-      if (typeof document !== "undefined") {
-        document.cookie = `${name}=; max-age=0${options.path ? `; path=${options.path}` : ""}`;
-      }
-    },
-  },
-});
+// export const supabase = createServerClient<Database>(import.meta.env.SUPABASE_URL, import.meta.env.SUPABASE_KEY, {
+// cookieOptions: cookieOptionsConfig,
+// cookies: {
+// get(name: string) {
+// // Try to get cookie from document if available
+// if (typeof document !== "undefined") {
+// const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
+// return match ? match[2] : undefined;
+// }
+// return undefined;
+// },
+// set(name: string, value: string, options: CookieOptionsWithName) {
+// if (typeof document !== "undefined") {
+// let cookieString = `${name}=${value}`;
+// if (options.path) cookieString += `; path=${options.path}`;
+// if (options.maxAge) cookieString += `; max-age=${options.maxAge}`;
+// if (options.domain) cookieString += `; domain=${options.domain}`;
+// if (options.secure) cookieString += "; secure";
+// if (options.httpOnly) cookieString += "; httpOnly";
+// if (options.sameSite) cookieString += `; samesite=${options.sameSite}`;
+// document.cookie = cookieString;
+// }
+// },
+// remove(name: string, options: CookieOptionsWithName) {
+// if (typeof document !== "undefined") {
+// document.cookie = `${name}=; max-age=0${options.path ? `; path=${options.path}` : ""}`;
+// }
+// },
+// },
+// });
+
+// The problematic client-side supabase instance that uses document.cookie should also be removed or refactored
+// if it's intended for server-side usage with Cloudflare.
+// For now, I am commenting it out as the primary goal is to fix server-side Cloudflare env vars.
+// If a client-side Supabase instance is needed, it should be created differently,
+// typically using createBrowserClient from @supabase/ssr.

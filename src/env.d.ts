@@ -12,6 +12,18 @@ declare global {
         email?: string;
         // Add other fields if necessary
       };
+      runtime: {
+        env: {
+          SUPABASE_URL: string;
+          SUPABASE_KEY: string;
+          // Add other Cloudflare environment variables here if needed
+          // Naprzykład, jeśli masz inne bindowania lub zmienne
+          // MY_KV_NAMESPACE: KVNamespace;
+          // ANOTHER_VAR: string;
+        };
+        // Możesz też dodać inne właściwości runtime Cloudflare, jeśli ich używasz
+        // np. context.waitUntil, context.next
+      };
     }
   }
 }
