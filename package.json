@@ -21,6 +21,7 @@
     "e2e:codegen": "playwright codegen"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^12.5.2",
     "@astrojs/react": "4.2.2",
     "@astrojs/sitemap": "3.3.0",
     "@hookform/resolvers": "^5.0.1",
