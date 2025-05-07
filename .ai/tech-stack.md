@@ -13,7 +13,7 @@ Poniżej przedstawiam krytyczną analizę, czy zaproponowany stos technologiczny
 - **Integracja AI (Openrouter.ai):**  
   Zewnętrzny model AI (Openrouter.ai) umożliwia łatwą integrację funkcjonalności generowania fiszek, bez konieczności budowania i trenowania własnego modelu.
 
-- **CI/CD i Hosting (GitHub Actions, DigitalOcean):**  
+- **CI/CD i Hosting (GitHub Actions, Cloudflare Pages):**  
   Automatyzacja wdrożeń oraz sprawdzony hosting pozwalają szybko i bezproblemowo wdrożyć MVP do środowiska produkcyjnego.
 
 > **Wniosek:** Wybrany stos technologiczny umożliwia szybkie wdrożenie MVP, wykorzystując nowoczesne, wysokopoziomowe narzędzia, które przyspieszają rozwój aplikacji.
@@ -79,7 +79,7 @@ Poniżej przedstawiam krytyczną analizę, czy zaproponowany stos technologiczny
 - **Integracja AI:**  
   Konieczne będzie dobre zarządzanie kluczami API i komunikacją z Openrouter.ai, co zapewni, że tylko autoryzowane wywołania będą realizowane.
 - **CI/CD i Hosting:**  
-  GitHub Actions i DigitalOcean to platformy, na których można wdrożyć solidne środki bezpieczeństwa, włączając automatyczne testy bezpieczeństwa w pipeline'ie CI/CD oraz konfigurację bezpiecznych środowisk serwerowych.
+  GitHub Actions i Cloudflare Pages to platformy, na których można wdrożyć solidne środki bezpieczeństwa, włączając automatyczne testy bezpieczeństwa w pipeline'ie CI/CD oraz konfigurację bezpiecznych środowisk serwerowych.
 
 > **Wniosek:** Stos technologiczny pozwala zadbać o wymagany poziom bezpieczeństwa. Kluczowe będzie zastosowanie najlepszych praktyk przy konfiguracji każdego z elementów (np. zarządzanie tajnymi danymi, stosowanie HTTPS, regularne audyty bezpieczeństwa).
 
@@ -92,7 +92,7 @@ Zaproponowany stos technologiczny:
 - **Frontend:** Astro 5, React 19, Typescript 5, Tailwind 4, Shadcn/u  
 - **Backend:** Supabase  
 - **Integracja AI:** Openrouter.ai  
-- **CI/CD i Hosting:** GitHub Actions, DigitalOcean
+- **CI/CD i Hosting:** GitHub Actions, Cloudflare Pages
 
 ... spełnia następujące kryteria:
 
