@@ -89,20 +89,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy dist --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} --branch=main
-
-      - name: Create deployment status
-        if: success()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const { repo } = context;
-            
-            await github.rest.repos.createDeploymentStatus({
-              owner: repo.owner,
-              repo: repo.repo,
-              deployment_id: context.payload.deployment ? context.payload.deployment.id : null,
-              state: 'success',
-              environment_url: '${{ secrets.PRODUCTION_URL }}',
-              description: 'Deployment completed successfully',
-              environment: 'production'
-            }); 
+        
