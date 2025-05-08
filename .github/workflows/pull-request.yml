@@ -110,7 +110,10 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const pr_number = context.issue.number;
+            const pr_number = context.payload.pull_request.number;
+            if (!pr_number) {
+              throw new Error('Could not get PR number from context.payload.pull_request.number');
+            }
             return { owner, repo, pr_number };
       
       - name: Create status comment
@@ -119,8 +122,13 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { owner, repo, pr_number } = ${{ steps.pr_details.outputs.result }};
+            const prDetails = JSON.parse('${{ steps.pr_details.outputs.result }}');
+            const { owner, repo, pr_number } = prDetails;
             
+            if (!pr_number) {
+              throw new Error('PR number is missing after parsing details.');
+            }
+
             github.rest.issues.createComment({
               owner,
               repo,
