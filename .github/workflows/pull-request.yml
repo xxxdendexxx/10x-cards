@@ -111,19 +111,20 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const pr_number = context.issue.number;
-            core.setOutput('owner', owner);
-            core.setOutput('repo', repo);
-            core.setOutput('pr_number', pr_number);
+            return { owner, repo, pr_number };
       
       - name: Create status comment
         uses: actions/github-script@v7
+        if: ${{ needs.unit-test.result == 'success' && needs.e2e-test.result == 'success' }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            await github.rest.issues.createComment({
-              owner: '${{ steps.pr_details.outputs.owner }}',
-              repo: '${{ steps.pr_details.outputs.repo }}',
-              issue_number: ${{ steps.pr_details.outputs.pr_number }},
+            const { owner, repo, pr_number } = ${{ steps.pr_details.outputs.result }};
+            
+            github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: pr_number,
               body: `✅ All checks passed successfully!
               
               - ✓ Linting
