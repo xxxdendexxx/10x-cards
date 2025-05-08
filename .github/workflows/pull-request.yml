@@ -98,7 +98,7 @@ jobs:
   status-comment:
     name: Status Comment
     needs: [lint, unit-test, e2e-test]
-    if: ${{ success() }}
+    if: ${{ success() && github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
