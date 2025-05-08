@@ -110,9 +110,9 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const pr_number = context.payload.pull_request.number;
+            const pr_number = context.issue.number;
             if (!pr_number) {
-              throw new Error('Could not get PR number from context.payload.pull_request.number');
+              throw new Error(`Could not get PR number from context.issue.number. Event name: ${context.eventName}`);
             }
             return { owner, repo, pr_number };
       
