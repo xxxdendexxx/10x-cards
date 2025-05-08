@@ -39,7 +39,7 @@ export default defineConfig({
   ],
   /* Webserver do uruchamiania aplikacji podczas testów */
   webServer: {
-    command: "npm run dev",
+    command: "astro dev --config astro.config.test.mjs",
     port: 3000,
     reuseExistingServer: !process.env.CI,
   },
