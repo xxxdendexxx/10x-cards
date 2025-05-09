@@ -95,6 +95,8 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps = {}) {
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
               data-testid="email-input"
+              aria-invalid={error && !email ? "true" : "false"}
+              data-test-scenario="login-email-field"
             />
           </div>
           <div className="grid gap-2" data-testid="password-field-container">
@@ -109,25 +111,53 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps = {}) {
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
               data-testid="password-input"
+              aria-invalid={error && !password ? "true" : "false"}
+              data-test-scenario="login-password-field"
             />
           </div>
         </CardContent>
         <CardFooter className="flex flex-col items-start">
           {error && (
-            <p className="text-red-500 text-sm mb-2 text-center w-full" data-testid="login-error-message">
+            <p
+              className="text-red-500 text-sm mb-2 text-center w-full"
+              data-testid="login-error-message"
+              data-test-scenario="login-validation-error"
+            >
               {error}
             </p>
           )}
-          <Button type="submit" className="w-full" disabled={isLoading} data-testid="login-submit-button">
-            {isLoading ? <span data-testid="login-loading-state">Signing in...</span> : "Sign in"}
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={isLoading}
+            data-testid="login-submit-button"
+            data-test-scenario="login-submit-action"
+          >
+            {isLoading ? (
+              <span data-testid="login-loading-state" data-test-scenario="login-in-progress">
+                Signing in...
+              </span>
+            ) : (
+              "Sign in"
+            )}
           </Button>
           <div className="mt-4 text-center text-sm w-full" data-testid="login-links">
             Don&apos;t have an account?{" "}
-            <a href="/auth/register" className="underline" data-testid="signup-link">
+            <a
+              href="/auth/register"
+              className="underline"
+              data-testid="signup-link"
+              data-test-scenario="navigate-to-signup"
+            >
               Sign up
             </a>
             <br />
-            <a href="/auth/recover-password" className="underline text-xs" data-testid="forgot-password-link">
+            <a
+              href="/auth/recover-password"
+              className="underline text-xs"
+              data-testid="forgot-password-link"
+              data-test-scenario="navigate-to-password-recovery"
+            >
               Forgot password?
             </a>
           </div>

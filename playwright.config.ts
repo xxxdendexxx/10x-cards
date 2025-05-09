@@ -4,10 +4,20 @@ import dotenv from "dotenv";
 import path from "path";
 dotenv.config({ path: path.resolve(process.cwd(), ".env.test") });
 
+/**
+ * Konfiguracja Playwright dla testów E2E
+ * @see https://playwright.dev/docs/test-configuration
+ */
 export default defineConfig({
   testDir: "./e2e/tests",
   /* Maksymalny czas testu przed uznaniem za nieudany */
   timeout: 30 * 1000,
+  expect: {
+    /**
+     * Maksymalny czas oczekiwania na asercje
+     */
+    timeout: 5000,
+  },
   /* Uruchamianie testów w trybie losowym */
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -20,8 +30,6 @@ export default defineConfig({
     baseURL: process.env.BASE_URL || "http://localhost:3000",
     /* Zrzuty ekranu przy niepowodzeniu testu */
     screenshot: "only-on-failure",
-    /* Nagrywanie wideo przy niepowodzeniu testu */
-    video: "on-first-retry",
     /* Trace przy niepowodzeniu testu */
     trace: "on-first-retry",
     /* Headless mode dla uruchamiania w CI */
