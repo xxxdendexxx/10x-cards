@@ -64,7 +64,7 @@ jobs:
     env:
       PUBLIC_ENV_NAME: ${{ secrets.PUBLIC_ENV_NAME }}
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_KEY: ${{ secrets.SUPABASE_PASSWORD }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
       E2E_USERNAME_ID: ${{ secrets.E2E_USERNAME_ID }}
       E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
       E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
