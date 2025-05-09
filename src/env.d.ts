@@ -17,8 +17,6 @@ declare global {
           SUPABASE_URL: string;
           SUPABASE_KEY: string;
           OPENROUTER_API_KEY: string;
-          TestUsername: string;
-          TestPassword: string;
           // Add other Cloudflare environment variables here if needed
           // Naprzykład, jeśli masz inne bindowania lub zmienne
           // MY_KV_NAMESPACE: KVNamespace;

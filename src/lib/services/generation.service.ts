@@ -1,4 +1,4 @@
-import crypto from "crypto";
+// import crypto from "crypto";
 import { OpenRouterService } from "./openrouter.service";
 import type { GenerationCreateResponseDTO } from "../../types";
 import type { APIContext } from "astro";
@@ -40,8 +40,13 @@ export class GenerationService {
     return this.context.locals.user.id;
   }
 
-  private static generateHash(text: string): string {
-    return crypto.createHash("md5").update(text).digest("hex");
+  private static async generateHash(text: string): Promise<string> {
+    // Use the Web Crypto API available in browser and Cloudflare Workers
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
   }
 
   private static initializeOpenRouter(apiKey: string): void {
@@ -63,7 +68,7 @@ export class GenerationService {
 
   async createGeneration(sourceText: string): Promise<number> {
     const userId = this.getUserId();
-    const sourceTextHash = GenerationService.generateHash(sourceText);
+    const sourceTextHash = await GenerationService.generateHash(sourceText);
 
     const { data: generation, error: insertError } = await this.supabase
       .from("generations")
