@@ -28,7 +28,7 @@ const FlashcardProposalList: React.FC<FlashcardProposalListProps> = ({ proposals
     <div className="space-y-6">
       <h2 className="text-xl font-semibold">Flashcard Proposals ({proposals.length})</h2>
 
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {proposals.map((proposal) => (
           <FlashcardProposalItem
             key={proposal.id}

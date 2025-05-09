@@ -55,7 +55,7 @@ export class GenerationService {
         apiKey: apiKey,
         endpoint: "https://openrouter.ai/api/v1/chat/completions",
         systemMessage:
-          "You are an AI tutor that creates flashcards from provided text. Your task is to extract key concepts and create question-answer pairs that will help in learning the material. Each flashcard should be concise and focus on a single concept.",
+          "You are an AI tutor that creates flashcards from provided text. Your task is to extract key concepts and create question-answer pairs that will help in learning the material. Each flashcard should be concise and focus on a single concept. Generate a maximum of 6 flashcards",
         modelName: "openai/gpt-4o-mini",
         modelParams: {
           temperature: 0.7,
