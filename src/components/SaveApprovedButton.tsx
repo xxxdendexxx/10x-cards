@@ -10,13 +10,13 @@ const SaveApprovedButton = ({ onClick, isEnabled, isLoading }: SaveApprovedButto
   return (
     <div className="flex flex-col items-center py-4 border-t border-gray-200 mt-4">
       <Button onClick={onClick} disabled={!isEnabled || isLoading} size="lg" className="w-full sm:w-auto">
-        {isLoading ? "Saving..." : "Save Approved Flashcards"}
+        {isLoading ? "Zapisywanie..." : "Zapisz zatwierdzone fiszki"}
       </Button>
 
       <p className="text-sm text-gray-500 mt-2">
         {!isEnabled
-          ? "You need to accept or edit at least one flashcard to save."
-          : "Only accepted and edited flashcards will be saved to your collection."}
+          ? "Musisz zaakceptować lub edytować przynajmniej jedną fiszkę, aby zapisać."
+          : "Tylko zatwierdzone i edytowane fiszki zostaną zapisane do Twojej kolekcji."}
       </p>
     </div>
   );

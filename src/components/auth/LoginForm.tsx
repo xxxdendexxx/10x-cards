@@ -74,10 +74,10 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps = {}) {
     <Card className="w-full max-w-sm" data-testid="login-card">
       <CardHeader>
         <CardTitle className="text-2xl" data-testid="login-title">
-          Login
+          Logowanie
         </CardTitle>
         <CardDescription data-testid="login-description">
-          Enter your email below to login to your account.
+          Wprowadź swój adres e-mail, aby zalogować się do konta.
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit} data-testid="login-form">
@@ -101,7 +101,7 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps = {}) {
           </div>
           <div className="grid gap-2" data-testid="password-field-container">
             <Label htmlFor="password" data-testid="password-label">
-              Password
+              Hasło
             </Label>
             <Input
               id="password"
@@ -135,21 +135,21 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps = {}) {
           >
             {isLoading ? (
               <span data-testid="login-loading-state" data-test-scenario="login-in-progress">
-                Signing in...
+                Logowanie...
               </span>
             ) : (
-              "Sign in"
+              "Zaloguj się"
             )}
           </Button>
           <div className="mt-4 text-center text-sm w-full" data-testid="login-links">
-            Don&apos;t have an account?{" "}
+            Nie masz konta?{" "}
             <a
               href="/auth/register"
               className="underline"
               data-testid="signup-link"
               data-test-scenario="navigate-to-signup"
             >
-              Sign up
+              Zarejestruj się
             </a>
             <br />
             <a
@@ -158,7 +158,7 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps = {}) {
               data-testid="forgot-password-link"
               data-test-scenario="navigate-to-password-recovery"
             >
-              Forgot password?
+              Zapomniałeś hasła?
             </a>
           </div>
         </CardFooter>

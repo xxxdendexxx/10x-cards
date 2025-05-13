@@ -58,13 +58,13 @@ const GenerateFlashcardsForm: React.FC<GenerateFlashcardsFormProps> = ({
     <form onSubmit={handleSubmit} className="space-y-4" data-testid={dataTestId || "generate-form"}>
       <div className="space-y-2" data-testid="source-text-container">
         <label htmlFor="sourceText" className="text-sm font-medium" data-testid="source-text-label">
-          Source Text
+          Tekst źródłowy
         </label>
         <Textarea
           id="sourceText"
           value={sourceText}
           onChange={handleChange}
-          placeholder="Enter your text here (minimum 1000 characters, maximum 10000 characters)"
+          placeholder="Wprowadź swój tekst tutaj (minimum 1000 znaków, maksimum 10000 znaków)"
           className="min-h-[200px]"
           disabled={isLoading}
           data-testid="source-text-input"
@@ -79,7 +79,7 @@ const GenerateFlashcardsForm: React.FC<GenerateFlashcardsFormProps> = ({
             }
             data-testid="character-count"
           >
-            {sourceText.length} / {MAX_TEXT_LENGTH} characters
+            {sourceText.length} / {MAX_TEXT_LENGTH} znaków
           </span>
           {error && (
             <span className="text-red-500" data-testid="source-text-error">
@@ -95,7 +95,7 @@ const GenerateFlashcardsForm: React.FC<GenerateFlashcardsFormProps> = ({
         className="w-full sm:w-auto"
         data-testid="generate-button"
       >
-        {isLoading ? <span data-testid="generating-state">Generating...</span> : "Generate Flashcard Proposals"}
+        {isLoading ? <span data-testid="generating-state">Generowanie...</span> : "Wygeneruj propozycje fiszek"}
       </Button>
     </form>
   );

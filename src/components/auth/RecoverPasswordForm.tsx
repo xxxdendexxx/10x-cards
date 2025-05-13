@@ -14,10 +14,8 @@ export default function RecoverPasswordForm() {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">Recover Password</CardTitle>
-        <CardDescription>
-          Enter your email address below. We&apos;ll send you a link to reset your password.
-        </CardDescription>
+        <CardTitle className="text-2xl">Odzyskiwanie hasła</CardTitle>
+        <CardDescription>Wprowadź swój adres email poniżej. Wyślemy Ci link do zresetowania hasła.</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
         <div className="grid gap-2">
@@ -26,11 +24,11 @@ export default function RecoverPasswordForm() {
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-start">
-        <Button className="w-full">Send Reset Link</Button>
+        <Button className="w-full">Wyślij link do resetowania</Button>
         <div className="mt-4 text-center text-sm">
-          Remembered your password?{" "}
+          Przypomniałeś sobie hasło?{" "}
           <a href="/auth/login" className="underline">
-            Sign in
+            Zaloguj się
           </a>
         </div>
       </CardFooter>

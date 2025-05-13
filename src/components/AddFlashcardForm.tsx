@@ -13,13 +13,13 @@ const flashcardSchema = z.object({
   front: z
     .string()
     .trim()
-    .min(1, { message: "Front is required." })
-    .max(200, { message: "Front must be 200 characters or less." }),
+    .min(1, { message: "Pole przodu jest wymagane." })
+    .max(200, { message: "Przód musi mieć maksymalnie 200 znaków." }),
   back: z
     .string()
     .trim()
-    .min(1, { message: "Back is required." })
-    .max(500, { message: "Back must be 500 characters or less." }),
+    .min(1, { message: "Pole tyłu jest wymagane." })
+    .max(500, { message: "Tył musi mieć maksymalnie 500 znaków." }),
 });
 
 // ViewModel for the form data (derived from schema)
@@ -61,11 +61,11 @@ const AddFlashcardForm: React.FC<AddFlashcardFormProps> = ({ onSubmit, onCancel,
           name="front"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Front</FormLabel>
+              <FormLabel>Przód</FormLabel>
               <FormControl>
-                <Input placeholder="Enter the front text" {...field} disabled={isLoading} maxLength={200} />
+                <Input placeholder="Wprowadź tekst przodu" {...field} disabled={isLoading} maxLength={200} />
               </FormControl>
-              <FormDescription>The question or term (max 200 chars).</FormDescription>
+              <FormDescription>Pytanie lub termin (max 200 znaków).</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -75,11 +75,11 @@ const AddFlashcardForm: React.FC<AddFlashcardFormProps> = ({ onSubmit, onCancel,
           name="back"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Back</FormLabel>
+              <FormLabel>Tył</FormLabel>
               <FormControl>
-                <Textarea placeholder="Enter the back text" {...field} disabled={isLoading} maxLength={500} rows={4} />
+                <Textarea placeholder="Wprowadź tekst tyłu" {...field} disabled={isLoading} maxLength={500} rows={4} />
               </FormControl>
-              <FormDescription>The answer or definition (max 500 chars).</FormDescription>
+              <FormDescription>Odpowiedź lub definicja (max 500 znaków).</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -88,16 +88,16 @@ const AddFlashcardForm: React.FC<AddFlashcardFormProps> = ({ onSubmit, onCancel,
         {/* Buttons remain outside FormField */}
         <div className="flex justify-end space-x-2 pt-4">
           <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
-            Cancel
+            Anuluj
           </Button>
           <Button type="submit" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
+                Zapisywanie...
               </>
             ) : (
-              "Save"
+              "Zapisz"
             )}
           </Button>
         </div>

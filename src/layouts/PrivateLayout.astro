@@ -50,8 +50,8 @@ const pathname = Astro.url.pathname;
       <!-- Right side user info and logout -->
       <div class="flex items-center gap-4">
         {user && <span class="text-sm text-muted-foreground">{user.email}</span>}
-        <form action="/api/auth/logout" method="post">
-          <Button variant="outline" size="sm" type="submit">Wyloguj</Button>
+        <form action="/api/auth/logout" method="post" class="flex">
+          <Button variant="outline" size="sm" type="submit" className="mt-0">Wyloguj</Button>
         </form>
       </div>
     </nav>

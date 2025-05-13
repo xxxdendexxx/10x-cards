@@ -30,8 +30,8 @@ const GenerateFlashcardsContainer: React.FC = () => {
   // Display errors using toast when they change
   useEffect(() => {
     if (errorGenerate) {
-      toast.error("Failed to generate flashcards", {
-        description: "There was an error when trying to generate flashcards. Please try again.",
+      toast.error("Nie udało się wygenerować fiszek", {
+        description: "Wystąpił błąd podczas generowania fiszek. Spróbuj ponownie.",
         duration: 5000,
       });
     }
@@ -39,8 +39,8 @@ const GenerateFlashcardsContainer: React.FC = () => {
 
   useEffect(() => {
     if (errorSave) {
-      toast.error("Failed to save flashcards", {
-        description: "There was an error when saving your flashcards. Please try again.",
+      toast.error("Nie udało się zapisać fiszek", {
+        description: "Wystąpił błąd podczas zapisywania fiszek. Spróbuj ponownie.",
         duration: 5000,
       });
     }

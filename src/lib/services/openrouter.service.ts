@@ -228,13 +228,13 @@ export class OpenRouterService {
     console.error("OpenRouter API Error:", error);
 
     if (error instanceof z.ZodError) {
-      throw new Error("Invalid response format from OpenRouter API");
+      throw new Error("Nieprawidłowy format odpowiedzi z API OpenRouter");
     }
 
     if (error instanceof Error) {
-      throw new Error(`OpenRouter API error: ${error.message}`);
+      throw new Error(`Błąd API OpenRouter: ${error.message}`);
     }
 
-    throw new Error("Unknown error occurred while calling OpenRouter API");
+    throw new Error("Wystąpił nieznany błąd podczas wywoływania API OpenRouter");
   }
 }
