@@ -23,55 +23,94 @@ const flashcardFormSchema = z.object({
 
 type FormValues = z.infer<typeof flashcardFormSchema>;
 
-interface EditFlashcardModalProps {
-  isOpen: boolean;
-  flashcard: FlashcardDTO | null;
-  onSave: (id: string, data: FlashcardUpdateDto) => Promise<void>;
-  onCancel: () => void;
-  isLoading: boolean;
+// Import the view model interface from the hook
+interface FlashcardProposalViewModel {
+  id: string;
+  front: string;
+  back: string;
+  originalFront: string;
+  originalBack: string;
+  status: "pending" | "accepted" | "rejected" | "edited";
+  source: "ai-full" | "ai-edited";
 }
 
-const EditFlashcardModal = ({ isOpen, flashcard, onSave, onCancel, isLoading }: EditFlashcardModalProps) => {
+interface EditFlashcardModalProps {
+  isOpen: boolean;
+  flashcard?: FlashcardDTO | null;
+  proposal?: FlashcardProposalViewModel | null;
+  onSave: ((id: string, data: FlashcardUpdateDto) => Promise<void>) | ((proposal: FlashcardProposalViewModel) => void);
+  onCancel?: () => void;
+  onClose?: () => void;
+  isLoading?: boolean;
+}
+
+const EditFlashcardModal = ({
+  isOpen,
+  flashcard,
+  proposal,
+  onSave,
+  onCancel,
+  onClose,
+  isLoading = false,
+}: EditFlashcardModalProps) => {
   const [error, setError] = useState<string | null>(null);
 
-  console.log("Modal render:", { isOpen, flashcard }); // Debugging
+  console.log("Modal render:", { isOpen, flashcard, proposal }); // Debugging
+
+  // Determine if we're editing a flashcard or a proposal
+  const isEditingProposal = !!proposal;
+  const itemToEdit = proposal || flashcard;
 
   // Inicjalizacja formularza
   const form = useForm<FormValues>({
     resolver: zodResolver(flashcardFormSchema),
     defaultValues: {
-      front: flashcard?.front || "",
-      back: flashcard?.back || "",
+      front: itemToEdit?.front || "",
+      back: itemToEdit?.back || "",
     },
   });
 
-  // Aktualizacja wartości formularza gdy zmienia się flashcard
+  // Aktualizacja wartości formularza gdy zmienia się flashcard lub proposal
   useEffect(() => {
-    console.log("Flashcard effect triggered:", flashcard); // Debugging
-    if (flashcard) {
+    console.log("Item effect triggered:", itemToEdit); // Debugging
+    if (itemToEdit) {
       form.reset({
-        front: flashcard.front,
-        back: flashcard.back,
+        front: itemToEdit.front,
+        back: itemToEdit.back,
       });
     }
-  }, [flashcard, form]);
+  }, [flashcard, proposal, form]);
 
   // Obsługa zapisu
   const handleSubmit = form.handleSubmit(async (data: FormValues) => {
-    if (!flashcard) return;
+    if (!itemToEdit) return;
 
     setError(null);
     try {
-      await onSave(flashcard.id, data);
+      if (isEditingProposal && proposal) {
+        // Edycja propozycji
+        const updatedProposal = {
+          ...proposal,
+          front: data.front,
+          back: data.back,
+        };
+        (onSave as (proposal: FlashcardProposalViewModel) => void)(updatedProposal);
+      } else if (flashcard) {
+        // Edycja istniejącej fiszki
+        await (onSave as (id: string, data: FlashcardUpdateDto) => Promise<void>)(flashcard.id, data);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Wystąpił błąd podczas zapisywania fiszki");
     }
   });
 
+  // Use the appropriate close handler
+  const closeHandler = onClose || onCancel;
+
   const handleOpenChange = (open: boolean) => {
     console.log("Dialog open change:", open); // Debugging
-    if (!open) {
-      onCancel();
+    if (!open && closeHandler) {
+      closeHandler();
     }
   };
 
@@ -124,7 +163,7 @@ const EditFlashcardModal = ({ isOpen, flashcard, onSave, onCancel, isLoading }: 
             {error && <div className="p-3 text-sm bg-red-50 border border-red-200 rounded text-red-700">{error}</div>}
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
+              <Button type="button" variant="outline" onClick={closeHandler} disabled={isLoading}>
                 Anuluj
               </Button>
               <Button type="submit" disabled={isLoading}>

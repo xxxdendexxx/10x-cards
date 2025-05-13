@@ -353,7 +353,7 @@ const FlashcardsListView = () => {
         isOpen={isEditModalOpen}
         flashcard={editingFlashcard}
         onSave={saveEdit}
-        onCancel={closeEditModal}
+        onClose={closeEditModal}
         isLoading={isLoading}
       />
       <DeleteConfirmationDialog
