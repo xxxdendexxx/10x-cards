@@ -10,7 +10,7 @@
 - [License](#license)
 
 ## Project Description
-**AI Flashcards** is a web application designed to help students efficiently generate and manage educational flashcards. It leverages artificial intelligence to quickly create flashcard suggestions from pasted text while also supporting manual flashcard creation, editing, and deletion. Integrated with a spaced repetition algorithm, the application enhances learning and retention. User account functionalities, including secure authentication, password changes, and account deletion, are powered by Supabase.
+**AI Flashcards** is a web application designed to help students efficiently generate and manage educational flashcards. It leverages artificial intelligence to quickly create flashcard suggestions from pasted text while also supporting manual flashcard creation, editing, and deletion. Integrated with a spaced repetition algorithm, the application enhances learning and retention. User account functionalities, including secure authentication, password changes, and account deletion, are powered by Supabase..
 
 ## Tech Stack
 - **Frontend:** Astro 5, React 19, TypeScript 5, Tailwind CSS 4, Shadcn/ui
