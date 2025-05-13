@@ -102,7 +102,7 @@ describe("GenerateFlashcardsForm", () => {
     );
 
     // Check character count
-    expect(screen.getByTestId("character-count")).toHaveTextContent(`0 / ${MAX_TEXT_LENGTH} characters`);
+    expect(screen.getByTestId("character-count")).toHaveTextContent(`0 / ${MAX_TEXT_LENGTH} znaków`);
 
     // Button should be disabled with empty text
     expect(screen.getByTestId("generate-button")).toBeDisabled();
@@ -242,7 +242,7 @@ describe("GenerateFlashcardsForm", () => {
     expect(screen.getByTestId("generate-button")).toBeDisabled();
 
     // Button should show loading text
-    expect(screen.getByTestId("generating-state")).toHaveTextContent("Generating...");
+    expect(screen.getByTestId("generating-state")).toHaveTextContent("Generowanie...");
   });
 
   // Test initial text rendering
@@ -263,7 +263,7 @@ describe("GenerateFlashcardsForm", () => {
 
     // Character count should reflect initialSourceText length
     expect(screen.getByTestId("character-count")).toHaveTextContent(
-      `${initialText.length} / ${MAX_TEXT_LENGTH} characters`
+      `${initialText.length} / ${MAX_TEXT_LENGTH} znaków`
     );
     // Button should be enabled if initial text is valid
     expect(screen.getByTestId("generate-button")).not.toBeDisabled();

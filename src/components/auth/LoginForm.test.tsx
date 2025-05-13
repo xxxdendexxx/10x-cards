@@ -25,12 +25,12 @@ describe("LoginForm", () => {
     render(<LoginForm />);
 
     // Check for key elements
-    expect(screen.getByText("Login")).toBeInTheDocument();
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /sign in/i })).toBeInTheDocument();
-    expect(screen.getByText(/don't have an account/i)).toBeInTheDocument();
-    expect(screen.getByText(/forgot password/i)).toBeInTheDocument();
+    expect(screen.getByText("Logowanie")).toBeInTheDocument();
+    expect(screen.getByLabelText(/e-?mail/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/hasło/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /zaloguj się/i })).toBeInTheDocument();
+    expect(screen.getByText(/nie masz konta/i)).toBeInTheDocument();
+    expect(screen.getByText(/zapomniałeś hasła/i)).toBeInTheDocument();
     expect(screen.getByTestId("login-form")).toBeInTheDocument();
   });
 
@@ -46,9 +46,9 @@ describe("LoginForm", () => {
     render(<LoginForm />);
 
     // Type invalid email
-    await user.type(getByLabelText(/email/i), "invalid-email");
-    await user.type(getByLabelText(/password/i), "password123");
-    await user.click(getByRole("button", { name: /sign in/i }));
+    await user.type(getByLabelText(/e-?mail/i), "invalid-email");
+    await user.type(getByLabelText(/hasło/i), "password123");
+    await user.click(getByRole("button", { name: /zaloguj się/i }));
 
     // Verify fetch wasn't called, which proves validation blocked submission
     expect(global.fetch).not.toHaveBeenCalled();
@@ -62,15 +62,15 @@ describe("LoginForm", () => {
     render(<LoginForm />);
 
     // Try to submit without values
-    await user.click(getByRole("button", { name: /sign in/i }));
+    await user.click(getByRole("button", { name: /zaloguj się/i }));
 
     // Verify fetch wasn't called, which proves validation blocked submission
     expect(global.fetch).not.toHaveBeenCalled();
 
     // Try with email but no password
-    await user.clear(getByLabelText(/email/i));
-    await user.type(getByLabelText(/email/i), "test@example.com");
-    await user.click(getByRole("button", { name: /sign in/i }));
+    await user.clear(getByLabelText(/e-?mail/i));
+    await user.type(getByLabelText(/e-?mail/i), "test@example.com");
+    await user.click(getByRole("button", { name: /zaloguj się/i }));
 
     // Verify fetch still wasn't called
     expect(global.fetch).not.toHaveBeenCalled();
@@ -86,11 +86,11 @@ describe("LoginForm", () => {
     render(<LoginForm onLoginSuccess={onLoginSuccess} />);
 
     // Fill form with valid data
-    await user.type(getByLabelText(/email/i), email);
-    await user.type(getByLabelText(/password/i), password);
+    await user.type(getByLabelText(/e-?mail/i), email);
+    await user.type(getByLabelText(/hasło/i), password);
 
     // Submit form
-    await user.click(getByRole("button", { name: /sign in/i }));
+    await user.click(getByRole("button", { name: /zaloguj się/i }));
 
     // Verify fetch was called with correct data
     await waitFor(() => {
@@ -118,9 +118,9 @@ describe("LoginForm", () => {
     render(<LoginForm />);
 
     // Fill and submit form
-    await user.type(getByLabelText(/email/i), "test@example.com");
-    await user.type(getByLabelText(/password/i), "password123");
-    await user.click(getByRole("button", { name: /sign in/i }));
+    await user.type(getByLabelText(/e-?mail/i), "test@example.com");
+    await user.type(getByLabelText(/hasło/i), "password123");
+    await user.click(getByRole("button", { name: /zaloguj się/i }));
 
     // Just verify the fetch was called
     await waitFor(() => {
@@ -137,9 +137,9 @@ describe("LoginForm", () => {
     render(<LoginForm />);
 
     // Fill and submit form
-    await user.type(getByLabelText(/email/i), "test@example.com");
-    await user.type(getByLabelText(/password/i), "password123");
-    await user.click(getByRole("button", { name: /sign in/i }));
+    await user.type(getByLabelText(/e-?mail/i), "test@example.com");
+    await user.type(getByLabelText(/hasło/i), "password123");
+    await user.click(getByRole("button", { name: /zaloguj się/i }));
 
     // Just verify the fetch was called
     await waitFor(() => {
@@ -156,9 +156,9 @@ describe("LoginForm", () => {
     render(<LoginForm onLoginSuccess={onLoginSuccess} />);
 
     // Fill and submit form
-    await user.type(getByLabelText(/email/i), "test@example.com");
-    await user.type(getByLabelText(/password/i), "password123");
-    await user.click(getByRole("button", { name: /sign in/i }));
+    await user.type(getByLabelText(/e-?mail/i), "test@example.com");
+    await user.type(getByLabelText(/hasło/i), "password123");
+    await user.click(getByRole("button", { name: /zaloguj się/i }));
 
     // Check if onLoginSuccess was called
     await waitFor(() => {
@@ -177,9 +177,9 @@ describe("LoginForm", () => {
     render(<LoginForm />);
 
     // Fill and submit form
-    await user.type(getByLabelText(/email/i), "test@example.com");
-    await user.type(getByLabelText(/password/i), "password123");
-    await user.click(getByRole("button", { name: /sign in/i }));
+    await user.type(getByLabelText(/e-?mail/i), "test@example.com");
+    await user.type(getByLabelText(/hasło/i), "password123");
+    await user.click(getByRole("button", { name: /zaloguj się/i }));
 
     // Check for redirect
     await waitFor(() => {
@@ -196,9 +196,9 @@ describe("LoginForm", () => {
     render(<LoginForm onLoginSuccess={onLoginSuccess} />);
 
     // Fill and submit form
-    await user.type(getByLabelText(/email/i), "test@example.com");
-    await user.type(getByLabelText(/password/i), "password123");
-    await user.click(getByRole("button", { name: /sign in/i }));
+    await user.type(getByLabelText(/e-?mail/i), "test@example.com");
+    await user.type(getByLabelText(/hasło/i), "password123");
+    await user.click(getByRole("button", { name: /zaloguj się/i }));
 
     // Verify fetch was called
     await waitFor(() => {
